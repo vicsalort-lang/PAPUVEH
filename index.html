@@ -1581,10 +1581,6 @@ async function fetchGeminiWithRetry(payload, maxRetries = 3) {
             }
             throw new Error("No fue posible contactar con el modelo tras varios reintentos.");
         }
-            if (!query) {
-                showNotification('Por favor ingrese los datos del caso o seleccione una de las plantillas predeterminadas.', 'amber');
-                return;
-            }
 
             setLoadingState(true);
             document.getElementById('ai-output-title').textContent = 'Dictamen Epidemiológico UVEH - Hospital UPAEP';
