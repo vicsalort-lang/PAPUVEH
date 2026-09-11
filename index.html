@@ -1545,17 +1545,19 @@ REGLAS CLÍNICAS INSTITUCIONALES OBLIGATORIAS:
    - JAMÁS prolongar la profilaxis por la sola presencia de drenajes quirúrgicos, sondas o catéteres.
 
 Responde siempre en español, con un tono clínico, estructurado, profesional y conciso para aplicación inmediata en quirófano o pase de visita.`;
-
-        async function fetchGeminiWithRetry(payload, maxRetries = 3) {
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+async function fetchGeminiWithRetry(payload, maxRetries = 3) {
+            const apiKey = "AQ.Ab8RN6JTM9l8DsFNk4EoDeecwAeKV94fHXNgrCYpEq3B74nWUA";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
             let delay = 1000;
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey
+                        },
                         body: JSON.stringify(payload)
                     });
 
@@ -1568,7 +1570,8 @@ Responde siempre en español, con un tono clínico, estructurado, profesional y 
                         delay *= 2;
                         continue;
                     } else {
-                        throw new Error(`Error en el servicio Gemini API (Status ${response.status})`);
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(errData?.error?.message || `Error en el servicio Gemini API (Status ${response.status})`);
                     }
                 } catch (err) {
                     if (i === maxRetries - 1) throw err;
@@ -1578,12 +1581,6 @@ Responde siempre en español, con un tono clínico, estructurado, profesional y 
             }
             throw new Error("No fue posible contactar con el modelo tras varios reintentos.");
         }
-
-        async function executeConsultation() {
-            const queryInput = document.getElementById('ai-query-input');
-            const query = queryInput?.value.trim();
-            const focus = document.getElementById('ai-focus')?.value || 'redose';
-
             if (!query) {
                 showNotification('Por favor ingrese los datos del caso o seleccione una de las plantillas predeterminadas.', 'amber');
                 return;
