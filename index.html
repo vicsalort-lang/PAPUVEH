@@ -39,26 +39,6 @@
         }
     </style>
 </head>
-<!-- Chosen Palette: Institutional Purple (Morado UPAEP), Warm Neutral Slate & Crimson Accents -->
-<!-- Application Structure Plan:
-    1. Header & Branding: Unidad de Vigilancia Epidemiológica Hospitalaria (UVEH) Hospital UPAEP.
-    2. Prescriber Engine: Dynamic guidance adapted for Mexican clinical practice (Cefalotina 4h redosing / Cefuroxima 1.5g as primary betalactams). Ceftriaxone guidance shifted from punitive ban to educational stewardship & risk prevention.
-    3. Specialty Catalog: Comprehensive search/filter database of surgical protocols with Cefalotina/Cefuroxima regimens.
-    4. Pharmacokinetics & Redosing Hub: Visual comparison of drug half-lives with stewardship rationale for avoiding Ceftriaxone in prophylaxis to prevent dysbiosis and secondary complications.
-    5. Resistance & Stewardship Matrix: Resistance data (BLEE), MRSA protocols, and clinical awareness rationale to minimize Ceftriaxone in prophylaxis.
-    6. CDC Wound Classification & Host Risk: CDC risk stratification tailored to hospital epidemiologic criteria.
-    7. Generational Strategy & Dissemination Hub: Actionable roadmap for medical staff engagement, resident education, nudge tactics, and clinical governance at Hospital UPAEP.
-    8. Bibliografía y Evidencia Científica (Verificada en PDF): Selección estricta de guías oficiales y estudios reales disponibles en la red (ASHP, CDC, OMS, CENETEC, OPS, PMC), con cadenas de búsqueda directa de archivos PDF y enlaces a repositorios públicos.
--->
-<!-- Visualization & Content Choices:
-    1. BLEE & Mexican Resistance -> Goal: Compare/Inform -> Doughnut Chart (Chart.js) -> Contextualizes CTX-M E. coli rates in Puebla/Mexico.
-    2. Pharmacokinetics Half-Life -> Goal: Compare -> Bar Chart (Chart.js) -> Demonstrates half-life of Cefalotina vs Cefuroxima and stewardship parameters.
-    3. Prescriber -> Goal: Interactive Calculation -> Dynamic JS Form -> Generates personalized UVEH-compliant order.
-    4. Dissemination Strategy -> Goal: Actionable Roadmap -> Interactive Structured Grid Cards + Action Checklist -> Facilitates adoption across clinical departments.
-    5. References Hub -> Goal: Direct Search & PDF Verification -> Dynamic Cards with PDF Query, direct PMC/IRIS/CENETEC URL, text/markdown export, and Google PDF lookup.
-    Libraries Used: Chart.js for canvas charts, Tailwind CSS for layout. NO SVG or Mermaid used.
--->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
@@ -80,7 +60,7 @@
                 <button onclick="switchTab('allergies')" id="nav-allergies" class="px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition">🛡️ Alergias y SARM/BLEE</button>
                 <button onclick="switchTab('cdc')" id="nav-cdc" class="px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition">📋 Clasificación Heridas</button>
                 <button onclick="switchTab('strategy')" id="nav-strategy" class="px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-500 font-bold transition shadow-sm">🚀 Estrategia de Difusión</button>
-                <button onclick="switchTab('references')" id="nav-references" class="px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition">📚 Bibliografía </button>
+                <button onclick="switchTab('references')" id="nav-references" class="px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition">📚 Bibliografía</button>
                 <button onclick="switchTab('ai')" id="nav-ai" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:from-purple-500 hover:to-indigo-500 transition shadow-sm flex items-center gap-1">✨ Consultor IA</button>
             </nav>
         </div>
@@ -91,7 +71,6 @@
 
         <!-- TAB 1: CALCULADOR INTERACTIVO -->
         <section id="tab-calculator" class="space-y-6">
-            <!-- Section Intro -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -114,7 +93,6 @@
                     </h3>
 
                     <form id="cdss-form" onsubmit="event.preventDefault(); calculateCDSS();" class="space-y-3 text-xs sm:text-sm">
-                        <!-- Specialty Selection -->
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1">Especialidad Quirúrgica</label>
                             <select id="calc-specialty" onchange="updateProcedureOptions()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
@@ -134,16 +112,12 @@
                             </select>
                         </div>
 
-                        <!-- Procedure Selection -->
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1">Procedimiento Específico</label>
-                            <select id="calc-procedure" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
-                                <!-- Populated dynamically -->
-                            </select>
+                            <select id="calc-procedure" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none"></select>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
-                            <!-- Approach -->
                             <div>
                                 <label class="block font-semibold text-slate-700 mb-1">Abordaje</label>
                                 <select id="calc-approach" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
@@ -152,7 +126,6 @@
                                     <option value="endoscopico">Endoscópico / Percutáneo</option>
                                 </select>
                             </div>
-                            <!-- Material Protesico -->
                             <div>
                                 <label class="block font-semibold text-slate-700 mb-1">¿Prótesis / Implante?</label>
                                 <select id="calc-prosthesis" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
@@ -162,7 +135,6 @@
                             </div>
                         </div>
 
-                        <!-- Anthropometrics -->
                         <div class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block font-semibold text-slate-700 mb-1">Edad (años)</label>
@@ -178,13 +150,11 @@
                             </div>
                         </div>
 
-                        <!-- Calculated BMI Indicator -->
                         <div id="bmi-badge" class="p-2 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700 flex justify-between items-center">
                             <span>Índice de Masa Corporal (IMC): <strong id="calc-bmi-val">24.2</strong> kg/m²</span>
                             <span id="calc-bmi-cat" class="px-2 py-0.5 rounded text-white bg-emerald-600 text-[10px]">Normal</span>
                         </div>
 
-                        <!-- Special Clinical Indicators -->
                         <div class="space-y-2 pt-1 border-t">
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="checkbox" id="calc-obstetric" class="rounded text-purple-600 focus:ring-purple-500 h-4 w-4">
@@ -206,7 +176,6 @@
                             </label>
                         </div>
 
-                        <!-- Intraoperative Context -->
                         <div class="grid grid-cols-2 gap-2 pt-1 border-t">
                             <div>
                                 <label class="block font-semibold text-slate-700 mb-1">Duración Prevista (h)</label>
@@ -238,7 +207,6 @@
                             <span id="result-wound-class" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">Clase II: Limpia-Contaminada</span>
                         </div>
 
-                        <!-- Main Regimen Details -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-4 rounded-xl bg-purple-50 border border-purple-200 space-y-2">
                                 <span class="text-xs font-bold text-purple-900 uppercase tracking-wider block">Esquema Primario Recomendado</span>
@@ -261,7 +229,6 @@
                             </div>
                         </div>
 
-                        <!-- Intraoperative & Duration Directives -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                             <div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
                                 <span class="font-bold text-amber-900 block mb-1">⏱️ Redosificación / Refuerzo</span>
@@ -273,12 +240,8 @@
                             </div>
                         </div>
 
-                        <!-- Specific Clinical Warnings -->
-                        <div id="result-alerts-container" class="space-y-2">
-                            <!-- Dynamic alerts injected here -->
-                        </div>
+                        <div id="result-alerts-container" class="space-y-2"></div>
 
-                        <!-- Ceftriaxona Stewardship Awareness Banner -->
                         <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start gap-2">
                             <span class="text-base">💡</span>
                             <div>
@@ -289,13 +252,11 @@
                             </div>
                         </div>
 
-                        <!-- Target Pathogens -->
                         <div class="p-3 bg-slate-50 rounded-lg text-xs border border-slate-200">
                             <span class="font-bold text-slate-700">Microbiota y Patógenos Diana: </span>
                             <span class="text-slate-600" id="result-pathogens">Staphylococcus aureus, Streptococcus spp., Bacilos Gramnegativos entéricos comensales.</span>
                         </div>
 
-                        <!-- AI Quick Consultation Action -->
                         <div class="pt-2 border-t flex flex-wrap items-center justify-between gap-2">
                             <p class="text-xs text-slate-500">¿Caso complejo o dudas de dosificación?</p>
                             <button onclick="consultAIFromCalculator()" class="px-3 py-1.5 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5">
@@ -320,7 +281,6 @@
                 </div>
             </div>
 
-            <!-- Controls: Search & Filter -->
             <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
                 <div class="w-full md:w-1/2">
                     <input type="text" id="catalog-search" oninput="filterCatalog()" placeholder="🔍 Buscar por procedimiento o patógeno..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
@@ -346,10 +306,7 @@
                 </div>
             </div>
 
-            <!-- Cards Container -->
-            <div id="catalog-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Dynamically populated via JS -->
-            </div>
+            <div id="catalog-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
 
         <!-- TAB 3: FARMACOCINÉTICA Y REDOSIFICACIÓN -->
@@ -359,22 +316,20 @@
                     <span>💊</span> Farmacocinética y Cronograma de Redosificación
                 </h2>
                 <p class="text-sm text-slate-600 mt-1">
-                    Comparación de vidas medias plasmáticas ($t_{1/2}$) e intervalos de refuerzo intraoperatorio conforme a los lineamientos de la UVEH.
+                    Comparación de vidas medias plasmáticas (t<sub>1/2</sub>) e intervalos de refuerzo intraoperatorio conforme a los lineamientos de la UVEH.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Half-Life Visual Chart -->
                 <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
                     <h3 class="font-bold text-purple-900 text-sm flex items-center gap-2">
-                        <span>📊</span> Vidas Medias ($t_{1/2}$ en horas) de Antimicrobianos Profilácticos
+                        <span>📊</span> Vidas Medias (t<sub>1/2</sub> en horas) de Antimicrobianos Profilácticos
                     </h3>
                     <div class="chart-container">
                         <canvas id="pkChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Simulator Panel -->
                 <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4 flex flex-col justify-between">
                     <div class="space-y-3">
                         <h3 class="font-bold text-purple-900 text-sm flex items-center gap-2">
@@ -407,7 +362,6 @@
                 </div>
             </div>
 
-            <!-- PK Detailed Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
                 <h3 class="font-bold text-purple-950 text-sm">Tabla de Parámetros Farmacocinéticos y Dosificación UVEH</h3>
                 <div class="overflow-x-auto">
@@ -417,13 +371,11 @@
                                 <th class="p-2.5 rounded-tl-lg">Antimicrobiano</th>
                                 <th class="p-2.5">Dosis Estándar Adulto</th>
                                 <th class="p-2.5">Dosis Pediátrica</th>
-                                <th class="p-2.5">Vida Media ($t_{1/2}$)</th>
+                                <th class="p-2.5">Vida Media (t<sub>1/2</sub>)</th>
                                 <th class="p-2.5 rounded-tr-lg">Intervalo de Refuerzo</th>
                             </tr>
                         </thead>
-                        <tbody id="pk-table-body">
-                            <!-- Populated dynamically via JS -->
-                        </tbody>
+                        <tbody id="pk-table-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -441,7 +393,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Allergy Algorithm -->
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
                     <h3 class="font-bold text-purple-950 text-sm border-b pb-2">Estratificación Inmunológica de Alergia a Penicilinas</h3>
                     <div class="space-y-3 text-xs">
@@ -457,7 +408,7 @@
                         <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1">
                             <span class="font-bold text-rose-900 block text-sm">🔴 Reacción Severa Tipo I (Mediada por IgE) o Exfoliativa</span>
                             <p class="text-rose-800">
-                                Manifestaciones: Anafilaxia, edema laríngeo, broncoespasmo, urticaria inmediata (<1 hora), hipotensión, síndrome de Stevens-Johnson o NET.
+                                Manifestaciones: Anafilaxia, edema laríngeo, broncoespasmo, urticaria inmediata (&lt;1 hora), hipotensión, síndrome de Stevens-Johnson o NET.
                             </p>
                             <p class="text-rose-900 font-semibold pt-1">
                                 Conducta UVEH: CONTRAINDICACIÓN de cualquier betalactámico. Utilizar Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV ± Gentamicina o Aztreonam.
@@ -466,7 +417,6 @@
                     </div>
                 </div>
 
-                <!-- Stewardship Rationale against Ceftriaxone & BLEE Chart -->
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
                     <div class="p-4 bg-purple-50 rounded-xl border border-purple-200 space-y-2 text-xs">
                         <h4 class="font-bold text-purple-950 text-sm">¿Por qué EVITAR Ceftriaxona en Profilaxis Quirúrgica?</h4>
@@ -489,7 +439,6 @@
 
         <!-- TAB 5: CLASIFICACIÓN DE HERIDAS Y FACTORES DE RIESGO CDC -->
         <section id="tab-cdc" class="space-y-6 hidden">
-            <!-- Section Intro -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2">
                     <span>📋</span> Clasificación CDC de Heridas y Criterios UVEH
@@ -499,9 +448,7 @@
                 </p>
             </div>
 
-            <!-- CDC Classes Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Class I -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-emerald-500">
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Clase I</span>
                     <h3 class="font-bold text-slate-800 text-sm">Herida Limpia</h3>
@@ -511,7 +458,6 @@
                     </div>
                 </div>
 
-                <!-- Class II -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-blue-500">
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Clase II</span>
                     <h3 class="font-bold text-slate-800 text-sm">Limpia-Contaminada</h3>
@@ -521,7 +467,6 @@
                     </div>
                 </div>
 
-                <!-- Class III -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-amber-500">
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Clase III</span>
                     <h3 class="font-bold text-slate-800 text-sm">Herida Contaminada</h3>
@@ -531,7 +476,6 @@
                     </div>
                 </div>
 
-                <!-- Class IV -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-rose-500">
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Clase IV</span>
                     <h3 class="font-bold text-slate-800 text-sm">Sucia o Infectada</h3>
@@ -545,7 +489,6 @@
 
         <!-- TAB 6: ESTRATEGIA DE DIFUSIÓN Y CAMBIO GENERACIONAL -->
         <section id="tab-strategy" class="space-y-6 hidden">
-            <!-- Section Intro -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-amber-200 bg-gradient-to-r from-purple-50 via-white to-amber-50">
                 <div class="flex items-center justify-between">
                     <div>
@@ -560,9 +503,7 @@
                 </div>
             </div>
 
-            <!-- Pillars Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Pillar 1: Resident Leadership -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3 border-t-4 border-t-purple-700">
                     <div class="flex items-center gap-2">
                         <span class="p-2 bg-purple-100 rounded-lg text-purple-900 font-bold text-lg">🎓</span>
@@ -578,7 +519,6 @@
                     </ul>
                 </div>
 
-                <!-- Pillar 2: Nudge & Clinical Decision Support -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3 border-t-4 border-t-teal-600">
                     <div class="flex items-center gap-2">
                         <span class="p-2 bg-teal-100 rounded-lg text-teal-900 font-bold text-lg">📲</span>
@@ -594,7 +534,6 @@
                     </ul>
                 </div>
 
-                <!-- Pillar 3: Audit & Peer Feedback -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3 border-t-4 border-t-amber-500">
                     <div class="flex items-center gap-2">
                         <span class="p-2 bg-amber-100 rounded-lg text-amber-900 font-bold text-lg">📈</span>
@@ -611,7 +550,6 @@
                 </div>
             </div>
 
-            <!-- Dissemination Roadmap / Checklist -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
                 <h3 class="font-bold text-purple-950 text-md border-b pb-2 flex items-center gap-2">
                     <span>🗓️</span> Hoja de Ruta de Implementación Institucional (100 Días)
@@ -645,9 +583,8 @@
             </div>
         </section>
 
-        <!-- TAB 7: BIBLIOGRAFÍA Y EVIDENCIA CIENTÍFICA (DOCUMENTOS Y PDFs VERIFICADOS EN LA RED) -->
+        <!-- TAB 7: BIBLIOGRAFÍA Y EVIDENCIA CIENTÍFICA -->
         <section id="tab-references" class="space-y-6 hidden">
-            <!-- Section Intro -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -658,7 +595,6 @@
                             Selección exclusiva de guías institucionales oficiales, acuerdos normativos y estudios de revisión vigentes disponibles públicamente en PDF (ASHP/IDSA, CDC, OMS IRIS, CENETEC México, PAHO/OPS y PMC). Incluye la cadena exacta de búsqueda en Google para descargar el archivo PDF de cada documento.
                         </p>
                     </div>
-                    <!-- Download/Export Buttons -->
                     <div class="flex items-center gap-2">
                         <button onclick="downloadBibliographyText()" class="px-3 py-2 bg-purple-900 hover:bg-purple-950 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1">
                             <span>📥</span> Descargar Referencias (.txt / .md)
@@ -667,7 +603,6 @@
                 </div>
             </div>
 
-            <!-- Controls: Category Filter & Search -->
             <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
                 <div class="w-full md:w-1/2">
                     <input type="text" id="ref-search" oninput="filterReferences()" placeholder="🔍 Buscar por autor, título, CDC, OMS, CENETEC, ASHP o palabra clave..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
@@ -684,12 +619,8 @@
                 </div>
             </div>
 
-            <!-- References Grid -->
-            <div id="references-cards-container" class="space-y-4">
-                <!-- Dynamically populated via JS -->
-            </div>
+            <div id="references-cards-container" class="space-y-4"></div>
 
-            <!-- Verification Banner -->
             <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-3">
                 <span class="text-2xl">✅</span>
                 <div>
@@ -701,115 +632,151 @@
             </div>
         </section>
 
-        <!-- TAB 8: ASISTENTE CLÍNICO Y CONSULTOR EPIDEMIOLÓGICO IA (GEMINI API) -->
+        <!-- TAB 8: ASISTENTE CLÍNICO Y CONSULTOR EPIDEMIOLÓGICO IA (INTEGRADO CON NUEVO MÓDULO) -->
         <section id="tab-ai" class="space-y-6 hidden">
-            <!-- Section Intro -->
+            <!-- Informative Banner -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-200 bg-gradient-to-r from-purple-50 via-white to-indigo-50">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2">
-                            <span>✨</span> Consultor Clínico y Auditor Epidemiológico UVEH (Gemini IA)
+                            <span>✨</span> Asistente Inteligente de Profilaxis Perioperatoria
                         </h2>
-                        <p class="text-sm text-slate-600 mt-1">
-                            Asistencia experta para casos quirúrgicos complejos en tiempo real. Analiza pacientes con polifarmacia, obesidad mórbida, alergias atípicas o sangrado severo, alineado con las directrices institucionales del Hospital UPAEP (Cefalotina / Cefuroxima y uso racional para evitar Ceftriaxona).
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+                            Soporte a la decisión médica para casos quirúrgicos complejos: recargas intraoperatorias a las <strong>4 horas con Cefalotina o Cefuroxima 1.5 g</strong>, ajuste en obesidad (<strong>3 g si peso ≥ 120 kg</strong>), estratificación inmunológica de alergias y concientización sobre evitar Ceftriaxona.
                         </p>
                     </div>
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-900 font-bold text-xs rounded-full border border-indigo-300 flex items-center gap-1 self-start md:self-auto">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> gemini-3-flash
-                    </span>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-2.5 py-1 bg-purple-100 text-purple-900 text-xs font-bold rounded-full border border-purple-300">
+                            Basado en Políticas UVEH / ASHP / INVIFAR
+                        </span>
+                        <span class="px-3 py-1 bg-gradient-to-r from-purple-700 to-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> gemini-3-flash-preview
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Interactive Input & Prompt Panel -->
+                <!-- Panel Izquierdo: Entrada de Datos y Presets -->
                 <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
                     <div class="flex items-center justify-between border-b pb-2">
                         <h3 class="font-bold text-purple-900 text-sm flex items-center gap-2">
-                            <span>💬</span> Planteamiento del Caso Quirúrgico
+                            <span>📝</span> Planteamiento del Caso Clínico
                         </h3>
-                        <button onclick="importCalculatorDataToAI()" class="text-xs text-purple-700 hover:text-purple-900 font-semibold underline flex items-center gap-1">
-                            📥 Cargar datos del Calculador
-                        </button>
-                    </div>
-
-                    <!-- Clinical Presets -->
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold text-slate-600">Casos clínicos de ejemplo (clic para cargar):</label>
-                        <div class="flex flex-wrap gap-1.5 text-[11px]">
-                            <button onclick="setAIPreset(1)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">
-                                🩸 Colectomía + Sangrado 1800mL
+                        <div class="flex items-center gap-2">
+                            <button onclick="importCalculatorDataToAI()" class="text-xs text-purple-700 hover:text-purple-900 font-semibold underline flex items-center gap-1">
+                                📥 Cargar Calculador
                             </button>
-                            <button onclick="setAIPreset(2)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">
-                                🤰 Cesárea + Obesidad IMC 41
-                            </button>
-                            <button onclick="setAIPreset(3)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">
-                                🛡️ Alergia Dudosa a Penicilina
-                            </button>
-                            <button onclick="setAIPreset(4)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">
-                                💡 Justificar sustitución de Ceftriaxona
+                            <span class="text-slate-300">|</span>
+                            <button onclick="clearForm()" class="text-xs text-slate-400 hover:text-purple-800 transition">
+                                Limpiar campos
                             </button>
                         </div>
                     </div>
 
-                    <!-- Prompt Textarea -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción del paciente y cirugía:</label>
-                        <textarea id="ai-query-input" rows="5" placeholder="Describa el paciente, tipo de intervención, antecedentes de alergias, duración prevista, comorbilidades..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none leading-relaxed"></textarea>
+                    <!-- Casos Clínicos Preestablecidos -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-600">Plantillas de casos frecuentes (clic para cargar):</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
+                            <button type="button" onclick="setPreset(1)" class="p-2 text-left bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-950 rounded-lg border border-slate-200 transition">
+                                <strong class="block text-purple-900">🩸 Colectomía + Sangrado</strong>
+                                <span>Hemorragia 1,800 mL y recarga</span>
+                            </button>
+                            <button type="button" onclick="setPreset(2)" class="p-2 text-left bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-950 rounded-lg border border-slate-200 transition">
+                                <strong class="block text-purple-900">🤰 Cesárea + Obesidad</strong>
+                                <span>IMC 41.6 kg/m² y dosis ajustada</span>
+                            </button>
+                            <button type="button" onclick="setPreset(3)" class="p-2 text-left bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-950 rounded-lg border border-slate-200 transition">
+                                <strong class="block text-purple-900">🛡️ Alergia Dudosa Penicilina</strong>
+                                <span>Exantema tardío vs Tipo I IgE</span>
+                            </button>
+                            <button type="button" onclick="setPreset(4)" class="p-2 text-left bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-950 rounded-lg border border-slate-200 transition">
+                                <strong class="block text-purple-900">💡 Ceftriaxona en Colecistectomía</strong>
+                                <span>Concientización microbiota y BLEE</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="space-y-2">
-                        <button id="btn-submit-ai" onclick="generateAIConsultation()" class="w-full py-2.5 bg-purple-800 hover:bg-purple-900 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center justify-center gap-2">
-                            <span>🧠</span> Generar Dictamen Clínico y Auditoría UVEH
+                    <div class="space-y-3 pt-2 border-t text-xs">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Descripción del caso y datos relevantes:</label>
+                            <textarea id="ai-query-input" rows="7" placeholder="Describa el procedimiento quirúrgico, edad, peso, comorbilidades, alergias, duración prevista, tiempo quirúrgico transcurrido o sangrado..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-purple-600 focus:outline-none leading-relaxed text-xs"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Modo de consulta:</label>
+                                <select id="ai-mode" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                    <option value="clinical">Dictamen Clínico Integral</option>
+                                    <option value="chart_note">Nota Médica Preoperatoria ECE</option>
+                                    <option value="stewardship">Auditoría de Uso Racional</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Enfoque prioritario:</label>
+                                <select id="ai-focus" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                    <option value="redose">Recarga a las 4h y sangrado</option>
+                                    <option value="allergy">Alternativa por alergia severa</option>
+                                    <option value="weight">Ajuste de dosis en obesidad</option>
+                                    <option value="ceftriaxone">Concientización Ceftriaxona</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="space-y-2 pt-2">
+                        <button id="btn-submit-ai" onclick="executeConsultation()" class="w-full py-2.5 bg-purple-800 hover:bg-purple-900 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center justify-center gap-2">
+                            <span>🧠</span> Generar Dictamen Clínico UVEH
                         </button>
-                        <button onclick="generateMedicalRecordNote()" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 text-xs font-semibold rounded-lg border border-indigo-200 transition flex items-center justify-center gap-1.5">
-                            <span>📝</span> Redactar Nota Estandarizada para Expediente Clínico (ECE)
+                        <button type="button" onclick="executeNoteGeneration()" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 text-xs font-semibold rounded-lg border border-indigo-200 transition flex items-center justify-center gap-1.5">
+                            <span>📝</span> Redactar Nota Oficial para Expediente (ECE)
                         </button>
                     </div>
 
-                    <!-- Status / Notification Box inside Panel -->
+                    <!-- Notificaciones del Asistente -->
                     <div id="ai-notification-box" class="hidden p-3 rounded-lg text-xs space-y-1"></div>
                 </div>
 
-                <!-- AI Response / Note Output Panel -->
-                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4 flex flex-col justify-between min-h-[460px]">
+                <!-- Panel Derecho: Salida Estructurada y Visor de Respuesta -->
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4 flex flex-col justify-between min-h-[520px]">
                     <div class="space-y-3">
-                        <div class="flex items-center justify-between border-b pb-2 flex-wrap gap-2">
+                        <div class="flex items-center justify-between border-b pb-2.5 flex-wrap gap-2">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl">📋</span>
                                 <h3 class="font-bold text-purple-950 text-sm" id="ai-output-title">Dictamen del Asistente Epidemiológico UVEH</h3>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="copyAIResponse()" id="btn-copy-ai" class="hidden px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded border border-slate-300 transition flex items-center gap-1">
-                                    <span>📋</span> Copiar al Portapapeles
+                                <button onclick="copyResponseToClipboard()" id="btn-copy-ai" class="hidden px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 text-xs font-semibold rounded border border-slate-300 transition flex items-center gap-1">
+                                    <span>📋</span> Copiar Texto
                                 </button>
-                                <span id="ai-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500">En espera</span>
+                                <span id="ai-status-badge" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500">En espera</span>
                             </div>
                         </div>
 
-                        <!-- Loading State -->
-                        <div id="ai-loading-spinner" class="hidden py-12 flex flex-col items-center justify-center space-y-3 text-purple-900">
+                        <!-- Estado de Carga -->
+                        <div id="ai-loading-spinner" class="hidden py-16 flex flex-col items-center justify-center space-y-3 text-purple-900">
                             <div class="w-10 h-10 border-4 border-purple-300 border-t-purple-800 rounded-full animate-spin"></div>
-                            <p class="text-xs font-semibold animate-pulse">Consultando base de conocimientos epidemiológicos UVEH con Gemini...</p>
-                            <span class="text-[11px] text-slate-400">Analizando vidas medias, dosis ajustadas y microbioma...</span>
+                            <p class="text-xs font-semibold animate-pulse">Analizando caso con Gemini API conforme a directrices UVEH Hospital UPAEP...</p>
+                            <span class="text-[11px] text-slate-400">Verificando dosis de Cefalotina, recargas cada 4 horas y microbioma colónico...</span>
                         </div>
 
-                        <!-- Content Render Area -->
+                        <!-- Contenedor del Resultado -->
                         <div id="ai-response-container" class="prose prose-xs max-w-none text-xs text-slate-700 leading-relaxed space-y-3">
-                            <div class="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-2 text-slate-500">
-                                <span class="text-3xl block">🩺</span>
-                                <p class="font-semibold text-slate-700 text-sm">Sin consulta activa</p>
+                            <div class="p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-2 text-slate-500">
+                                <span class="text-4xl block">🩺</span>
+                                <p class="font-semibold text-slate-700 text-sm">Esperando consulta clínica</p>
                                 <p class="text-xs max-w-md mx-auto">
-                                    Ingrese los datos de su paciente o seleccione uno de los casos preestablecidos a la izquierda. El sistema generará una recomendación personalizada evaluando pautas de <strong>Cefalotina</strong>, <strong>Cefuroxima</strong>, redosificación a las 4 h y preservación ante <em>C. difficile</em> y BLEE.
+                                    Describa el paciente y la intervención en el panel izquierdo o seleccione una de las plantillas preestablecidas para generar el dictamen técnico o la nota para el Expediente Clínico Electrónico (ECE).
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Institutional Footnote -->
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                        <span>Soporte a la decisión asistido por IA • Valide con el Comité de Infecciones UVEH</span>
-                        <span>Hospital UPAEP</span>
+                    <!-- Pie de página del dictamen -->
+                    <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span>Soporte a la decisión clínica asistido por IA • Valide con la UVEH y Comité de Infecciones</span>
+                        <span class="font-semibold text-purple-900">Hospital UPAEP • Puebla, México</span>
                     </div>
                 </div>
             </div>
@@ -827,57 +794,31 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // DATA STRUCTURES (Adaptadas para México / Hospital UPAEP: Cefalotina y Cefuroxima 1.5g)
         const catalogData = [
-            // Cardiovascular & Thoracic
             { id: 'cardiac_major', spec: 'Cardiovascular', name: 'Cirugía Cardíaca Mayor (Bypass, cambio valvular)', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis, BGN entéricos', first: 'Cefalotina 2 g IV (o Cefuroxima 1.5 g IV)', alt: 'Vancomicina 15 mg/kg IV o Clindamicina 900 mg IV', dur: 'Cada 4 h (Cefalotina) o 4 h (Cefuroxima); máx 48 h', status: 'indicada' },
             { id: 'cardiac_device', spec: 'Cardiovascular', name: 'Implante de Marcapasos o Marcapasos Defibrilador', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Vancomicina 15 mg/kg IV', dur: 'Dosis única preoperatoria', status: 'indicada' },
             { id: 'thoracic_noncardiac', spec: 'Cardiovascular', name: 'Cirugía Torácica No Cardíaca (Lobectomía, toracotomía)', class: 'Clase II', path: 'S. aureus, S. epidermidis, estreptococos, BGN', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV o Ampicilina-sulbactam 3 g IV', alt: 'Clindamicina 900 mg IV + Amikacina', dur: 'Dosis única o hasta 24 horas', status: 'indicada' },
-
-            // Vascular
             { id: 'vascular_graft', spec: 'Vascular', name: 'Cirugía Arterial con Injerto / Bypass Inguinal', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis, BGN entéricos', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Vancomicina 15 mg/kg IV o Clindamicina 900 mg IV', dur: 'Dosis única preoperatoria (< 24 h)', status: 'indicada' },
             { id: 'vascular_amputation', spec: 'Vascular', name: 'Amputación de Extremidad por Isquemia / Pie Diabético', class: 'Clase III', path: 'S. aureus, S. epidermidis, BGN, Clostridium spp.', first: 'Cefalotina 2 g IV + Metronidazol 500 mg IV', alt: 'Clindamicina 900 mg + Gentamicina 2 mg/kg', dur: 'Dosis única preoperatoria (máximo 24 h)', status: 'indicada' },
             { id: 'vascular_vein', spec: 'Vascular', name: 'Cirugía Venosa Superficial (Flebectomía sin úlcera)', class: 'Clase I', path: 'Flora cutánea normal', first: 'No se recomienda profilaxis', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
-
-            // Digestive & Abdominal
             { id: 'gastric_open', spec: 'Digestivo', name: 'Cirugía Gastroduodenal / Bariátrica / Pared Abdominal', class: 'Clase II', path: 'BGN entéricos, cocos Gram-positivos', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Clindamicina 900 mg + Gentamicina 5 mg/kg', dur: 'Dosis única preoperatoria', status: 'indicada' },
             { id: 'hernia_mesh', spec: 'Digestivo', name: 'Hernioplastia con Malla (Pared abdominal)', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Vancomicina 1.5 g IV o Clindamicina 900 mg IV', dur: 'Dosis única preoperatoria', status: 'indicada' },
             { id: 'endoscopy_simple', spec: 'Digestivo', name: 'Endoscopia Digestiva Alta / Colonoscopia Diagnóstica', class: 'Procedimiento Menor', path: 'Flora comensal', first: 'No se recomienda profilaxis', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
-
-            // Hepatobiliary
             { id: 'chole_lap_low', spec: 'Hepatobiliar', name: 'Colecistectomía Laparoscópica Electiva de Bajo Riesgo', class: 'Clase I/II de bajo riesgo', path: 'BGN entéricos comensales', first: 'No se recomienda profilaxis rutinaria', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
             { id: 'chole_high_risk', spec: 'Hepatobiliar', name: 'Colecistectomía de Alto Riesgo / Abierta (Colecistitis, ictericia)', class: 'Clase II/III', path: 'BGN entéricos (E. coli, Klebsiella), enterococos', first: 'Cefalotina 2 g IV + Metronidazol 500 mg IV (o Cefuroxima 1.5 g IV)', alt: 'Metronidazol 500 mg + Gentamicina 5 mg/kg o Ciprofloxacino', dur: 'Dosis única preoperatoria (< 24 h)', status: 'indicada' },
-
-            // Colorectal
             { id: 'colorectal_elective', spec: 'Colorrectal', name: 'Cirugía Colorrectal Electiva / Resección de Colon', class: 'Clase II', path: 'BGN entéricos, Bacteroides spp., anaerobios', first: 'Cefalotina 2 g + Metronidazol 500 mg IV (o Cefuroxima 1.5 g + Metronidazol)', alt: 'Clindamicina 900 mg + Gentamicina 5 mg/kg (o Ciprofloxacino)', dur: 'Descontinuar strictly en < 24 horas', status: 'indicada' },
             { id: 'appendectomy_simple', spec: 'Colorrectal', name: 'Apendicectomía por Apendicitis No Perforada', class: 'Clase II', path: 'BGN entéricos, anaerobios, enterococos', first: 'Cefalotina 2 g + Metronidazol 500 mg IV o Cefoxitina 2 g IV', alt: 'Clindamicina 900 mg + Gentamicina 5 mg/kg', dur: 'Dosis única preoperatoria', status: 'indicada' },
-
-            // Urology
             { id: 'turp_urology', spec: 'Urología', name: 'Resección Transuretral (RTUP / RTUV) / Ureteroscopía', class: 'Clase II', path: 'BGN entéricos, enterococos, Pseudomonas', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV ± Gentamicina', alt: 'Ciprofloxacino 400 mg IV ± Gentamicina', dur: 'Dosis única preoperatoria', status: 'indicada' },
             { id: 'cystoscopy_simple', spec: 'Urología', name: 'Cistoscopia Diagnóstica Menor y Urodinamia', class: 'Procedimiento Menor', path: 'Flora comensal', first: 'No se recomienda profilaxis antimicrobiana', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
-
-            // Gynecology & Obstetrics
             { id: 'cesarean_section', spec: 'Ginecología', name: 'Operación Cesárea (Electiva o Urgencia)', class: 'Clase II', path: 'Estreptococo Grupo B, enterococos, BGN, anaerobios', first: 'Cefalotina 2 g IV (o Cefuroxima 1.5 g IV)', alt: 'Clindamicina 900 mg + Gentamicina 5 mg/kg', dur: 'Dosis única ANTES de incisión en piel', status: 'indicada' },
             { id: 'hysterectomy', spec: 'Ginecología', name: 'Histerectomía (Abdominal, Vaginal o Laparoscópica)', class: 'Clase II', path: 'BGN entéricos, anaerobios, S. agalactiae', first: 'Cefalotina 2 g IV + Metronidazol 500 mg IV (o Cefuroxima 1.5 g IV)', alt: 'Clindamicina 900 mg + Gentamicina 5 mg/kg', dur: 'Dosis preoperatoria única', status: 'indicada' },
-
-            // Neurosurgery
             { id: 'craniotomy_clean', spec: 'Neurocirugía', name: 'Craneotomía Electiva Limpia / Derivación LCR', class: 'Clase I con/sin Implante', path: 'S. aureus, S. epidermidis, C. acnes', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV', dur: 'Suspender dentro de las 24 horas', status: 'indicada' },
-
-            // Orthopedics
             { id: 'ortho_joint_replacement', spec: 'Ortopedia', name: 'Reemplazo Articular (Cadera, rodilla) y Fijación Ósea', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis, BGN entéricos', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Vancomicina 15 mg/kg IV o Clindamicina 900 mg IV', dur: 'Dosis única; suspender en ≤ 24 h', status: 'indicada' },
             { id: 'arthroscopy_simple', spec: 'Ortopedia', name: 'Artroscopia Diagnóstica Simple sin Implante', class: 'Clase I', path: 'Flora cutánea comensal', first: 'No se recomienda profilaxis', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
-
-            // Head & Neck
             { id: 'head_neck_oncology', spec: 'Cabeza y Cuello', name: 'Cirugía Oncológica Limpia-Contaminada (Apertura orofaríngea)', class: 'Clase II', path: 'Anaerobios orales, BGN entéricos, S. aureus', first: 'Cefalotina 2 g + Metronidazol 500 mg IV (o Cefuroxima 1.5 g IV)', alt: 'Clindamicina 900 mg IV', dur: 'Dosis única; suspender en < 24 h', status: 'indicada' },
             { id: 'thyroidectomy', spec: 'Cabeza y Cuello', name: 'Tiroidectomía / Paratiroidectomía Limpia', class: 'Clase I', path: 'Flora cutánea', first: 'No se recomienda profilaxis', alt: 'No recomendada', dur: 'No aplica', status: 'exento' },
-
-            // Plastic Surgery
             { id: 'breast_implant', spec: 'Plástica', name: 'Cirugía Mamaria con Implante o Colgajo Reconstructivo', class: 'Clase I con Implante', path: 'S. aureus, S. epidermidis, estreptococos', first: 'Cefalotina 2 g IV o Cefuroxima 1.5 g IV', alt: 'Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV', dur: 'Dosis única preoperatoria (≤ 24 h)', status: 'indicada' },
-
-            // Interventional Radiology
             { id: 'ptbd_biliary_drain', spec: 'Radiología', name: 'Drenaje Biliar Transhepático Percutáneo (PTBD)', class: 'Procedimiento Percutáneo', path: 'BGN entéricos, enterococos, anaerobios', first: 'Cefuroxima 1.5 g + Metronidazol 500 mg IV (o Ampicilina-sulbactam 3g)', alt: 'Gentamicina 2-5 mg/kg + Metronidazol 500 mg IV', dur: 'Dosis única pre-procedimiento', status: 'indicada' },
-
-            // Pediatrics
             { id: 'peds_gi_surgery', spec: 'Pediátrica', name: 'Cirugía Pediátrica Digestiva / Apendicectomía Pediátrica', class: 'Clase II Pediátrica', path: 'BGN entéricos, enterococos, anaerobios', first: 'Cefalotina 30 mg/kg IV (máx 2 g) + Metronidazol 15 mg/kg IV (máx 500 mg)', alt: 'Clindamicina 10 mg/kg + Gentamicina 2.5 mg/kg IV', dur: 'Dosis única; redosificar a las 4h si se prolonga', status: 'indicada' }
         ];
 
@@ -893,7 +834,6 @@
             { drug: 'Ceftriaxona', adult: 'Evitar en profilaxis (Reservar)', peds: 'Evitar en profilaxis', t12: '8.0 h', redose: '⚠️ Evitar por riesgo de disbiosis y BLEE' }
         ];
 
-        // BIBLIOGRAFÍA STRICTLY VERIFIED - SOLO DOCUMENTOS REALES Y DISPONIBLES EN PDF EN LA RED
         const referencesData = [
             {
                 id: 'ref1',
@@ -1044,7 +984,6 @@
             }
         ];
 
-        // INITIALIZATION & TAB NAVIGATION
         document.addEventListener('DOMContentLoaded', () => {
             updateProcedureOptions();
             renderCatalog();
@@ -1132,13 +1071,7 @@
                 if (el) el.classList.add('hidden');
                 const btn = document.getElementById(`nav-${t}`);
                 if (btn) {
-                    if (t === 'ai') {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition flex items-center gap-1";
-                    } else if (t === 'strategy') {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition";
-                    } else {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition";
-                    }
+                    btn.className = "px-3 py-1.5 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-800 hover:text-white transition";
                 }
             });
 
@@ -1157,7 +1090,6 @@
             }
         }
 
-        // PRESCRIBER LOGIC
         function calculateCDSS() {
             const procId = document.getElementById('calc-procedure').value;
             const procObj = catalogData.find(p => p.id === procId) || catalogData[0];
@@ -1174,7 +1106,6 @@
             const alertsContainer = document.getElementById('result-alerts-container');
             alertsContainer.innerHTML = '';
 
-            // Status Badge & Title
             if (procObj.status === 'exento') {
                 document.getElementById('status-icon').textContent = '⚠️';
                 document.getElementById('result-status-title').textContent = 'Profilaxis NO Recomendada de Rutina';
@@ -1187,15 +1118,13 @@
                 document.getElementById('result-wound-class').className = 'px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900 border border-purple-300';
             }
 
-            // Primary Drug Logic Adjustments (Cefalotina / Cefuroxima 1.5g)
             let primaryDrugText = procObj.first;
             let doseNote = 'Dosis aprobada según cuadro básico institucional UPAEP.';
             let timingText = '0 a 60 min previos a la incisión';
 
-            // Weight & BMI Modifiers
             if (weight >= 120 && primaryDrugText.includes('Cefalotina')) {
-                primaryDrugText = primaryDrugText.replace('2 g', '2 g - 3 g IV (Ajuste por peso elevado)');
-                doseNote = 'Considerar dosis de 2g a 3g IV por peso elevado (≥ 120 kg).';
+                primaryDrugText = primaryDrugText.replace('2 g', '3 g IV (Ajuste por peso ≥ 120 kg)');
+                doseNote = 'Ajuste obligatorio a 3 g IV preoperatorios por peso ≥ 120 kg.';
             }
 
             if (isObstetric && bmi >= 35) {
@@ -1209,7 +1138,6 @@
                 addAlert('🧫 Criterio SARM Activo', 'Se incorpora Vancomicina por riesgo de Staphylococcus aureus resistente a meticilina.', 'rose');
             }
 
-            // Pediatric calculation if age < 18
             if (age < 18) {
                 primaryDrugText = `Dosis Pediátrica: Cefalotina 30-40 mg/kg IV (Peso: ${weight} kg = ${(weight*35).toFixed(0)} mg IV, Máx 2g)`;
                 doseNote = 'Calculada a 30-40 mg/kg. No superar dosis máxima de adulto.';
@@ -1218,24 +1146,20 @@
             document.getElementById('result-primary-drug').textContent = primaryDrugText;
             document.getElementById('result-primary-dose-note').textContent = doseNote;
             document.getElementById('result-timing').textContent = timingText;
-
-            // Alternative Logic
             document.getElementById('result-alt-drug').textContent = procObj.alt;
 
-            // Allergy Alerts
             if (allergy === 'severe') {
                 addAlert('🔴 Alergia Severa a Betalactámicos (IgE)', 'Evitar Penicilinas y Cefalosporinas (Cefalotina/Cefuroxima). Utilizar régimen alternativo de Clindamicina o Vancomicina.', 'rose');
             } else if (allergy === 'mild') {
                 addAlert('🟢 Alergia Leve No IgE', 'El uso de Cefalotina o Cefuroxima es seguro en quirófano. Reactividad cruzada menor al 1%.', 'emerald');
             }
 
-            // Re-dosing & Duration Logic
             let redoseMsg = 'Redosificar según el tiempo transcurrido.';
             if (primaryDrugText.includes('Cefalotina')) {
                 redoseMsg = 'Redosificar Cefalotina CADA 4 HORAS tras la primera dosis en el esquema institucional.';
             } else if (primaryDrugText.includes('Cefuroxima')) {
                 redoseMsg = 'Redosificar Cefuroxima 1.5 g CADA 4 HORAS tras la primera dosis.';
-            } else if (primaryDrugText.includes('Ampicilina-sulbactam') || primaryDrugText.includes('Cefoxitina')) {
+            } else if (primaryDrugText.includes('Ampicilina') || primaryDrugText.includes('Cefoxitina')) {
                 redoseMsg = 'Redosificar cada 2 horas tras la primera dosis.';
             } else if (primaryDrugText.includes('Vancomicina')) {
                 redoseMsg = 'No requiere dosis de refuerzo intraoperatoria.';
@@ -1268,7 +1192,6 @@
             container.appendChild(alertDiv);
         }
 
-        // CATALOG TAB RENDER & FILTER
         function renderCatalog() {
             const container = document.getElementById('catalog-cards-container');
             container.innerHTML = '';
@@ -1314,7 +1237,6 @@
             cards.forEach(card => {
                 const text = card.getAttribute('data-text');
                 const spec = card.getAttribute('data-spec');
-
                 const matchesQuery = text.includes(query);
                 const matchesSpec = specFilter === 'all' || spec === specFilter;
 
@@ -1326,7 +1248,6 @@
             });
         }
 
-        // PK TABLE RENDER & SIMULATOR
         function renderPKTable() {
             const tbody = document.getElementById('pk-table-body');
             tbody.innerHTML = '';
@@ -1349,7 +1270,6 @@
         function runRedoseSimulation() {
             const drug = document.getElementById('sim-drug').value;
             const timeStr = document.getElementById('sim-time').value;
-
             if (!timeStr) return;
 
             const [hours, minutes] = timeStr.split(':').map(Number);
@@ -1385,7 +1305,6 @@
             }
         }
 
-        // REFERENCES TAB RENDER & ACTIONS (PROPER VERIFIED OPEN ACCESS LINKS + PDF SEARCH LOCATOR)
         function renderReferences() {
             const container = document.getElementById('references-cards-container');
             container.innerHTML = '';
@@ -1404,7 +1323,6 @@
                 card.setAttribute('data-text', `${ref.title} ${ref.authors} ${ref.journal} ${ref.doi || ''} ${ref.pdfSearchQuery}`.toLowerCase());
 
                 const badge = catBadges[ref.cat] || { name: 'Documento Verificado', class: 'bg-slate-100 text-slate-700' };
-                const googleSearchPdfUrl = `https://www.google.com/search?q=${encodeURIComponent(ref.pdfSearchQuery)}`;
 
                 card.innerHTML = `
                     <div class="space-y-2">
@@ -1457,7 +1375,6 @@
             cards.forEach(card => {
                 const text = card.getAttribute('data-text');
                 const cat = card.getAttribute('data-cat');
-
                 const matchesQuery = text.includes(query);
                 const matchesCat = catFilter === 'all' || cat === catFilter;
 
@@ -1506,7 +1423,6 @@
             URL.revokeObjectURL(url);
         }
 
-        // CHARTS IMPLEMENTATION (Chart.js)
         function initPKChart() {
             const ctx = document.getElementById('pkChart').getContext('2d');
             new Chart(ctx, {
@@ -1592,19 +1508,46 @@
             });
         }
 
-        const GEMINI_SYSTEM_INSTRUCTION = `Eres el Asistente Clínico y Consultor Especialista de la Unidad de Vigilancia Epidemiológica Hospitalaria (UVEH) del Hospital UPAEP en Puebla, México.
-Tu función es guiar a médicos adscritos y residentes en la prescripción racional, segura y costo-efectiva de la Profilaxis Antimicrobiana Perioperatoria según la normativa institucional y mexicana:
-1. Pilares principales: Cefalotina (recarga estandarizada cada 4 horas) o Cefuroxima 1.5 g IV. En pacientes con peso >= 120 kg, la dosis de Cefalotina se incrementa a 2-3 g IV.
-2. Política sobre Ceftriaxona: No se utiliza en profilaxis quirúrgica rutinaria por inducir alta presión selectiva de bacterias BLEE (CTX-M con prevalencia >55% en México) y destruir la microbiota protectora colónica, favoreciendo colitis por Clostridioides difficile. Se debe concientizar y reservar Ceftriaxona para infecciones sistémicas documentadas.
-3. Ventana de infusión: 0 a 60 minutos previos a la incisión para betalactámicos; 60 a 120 minutos para Vancomicina y fluoroquinolonas.
-4. Redosificación intraoperatoria: Cada 4 horas para Cefalotina o Cefuroxima si la cirugía se prolonga, o inmediatamente ante sangrado masivo >= 1500 mL (o >= 25 mL/kg en pediatría).
-5. Manejo de alergia: Si la reacción a betalactámicos es leve/no-IgE (rash tardío o intolerancia GI), Cefalotina y Cefuroxima son seguras (reactividad cruzada <1%). Si la reacción es tipo I mediada por IgE (anafilaxia, angioedema, broncoespasmo), sustituir por Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV +/- cobertura para Gram-negativos según el caso.
-6. Duración: Dosis única preoperatoria. Duración máxima menor a 24 horas (no continuar por presencia de drenajes).
-Responde siempre con lenguaje médico profesional, claro, empático, estructurado en viñetas comprensibles y de aplicación inmediata en quirófano.`;
+        // ==========================================
+        // MÓDULO INTEGRADO DE CONSULTOR CLÍNICO IA
+        // ==========================================
 
-        // Utility: Exponential Backoff Fetch
+        const GEMINI_SYSTEM_INSTRUCTION = `Eres el Consultor Clínico Especialista de la Unidad de Vigilancia Epidemiológica Hospitalaria (UVEH) del Hospital UPAEP en Puebla, México.
+Tu misión es guiar a médicos adscritos, residentes y personal de enfermería quirúrgica en la prescripción racional y segura de la profilaxis antimicrobiana perioperatoria basada en la evidencia científica (ASHP/IDSA/SIS/SHEA 2013, política institucional CM-PO-DM-042/035, guía HCTM UKM 2018 y vigilancia epidemiológica AMIMC/PUCRA/INVIFAR 2026).
+
+REGLAS CLÍNICAS INSTITUCIONALES OBLIGATORIAS:
+1. ELECCIÓN DE ANTIMICROBIANO:
+   - Fármacos de primera línea: Cefalotina o Cefuroxima 1.5 g IV.
+   - NO utilizar Cefazolina (adaptado a Cefalotina o Cefuroxima 1.5 g para disponibilidad en México).
+   - Pacientes con peso >= 120 kg: La dosis de Cefalotina se incrementa obligatoriamente a 3 g IV preoperatorios.
+
+2. CONCIENTIZACIÓN SOBRE CEFTRIAXONA (STEWARDSHIP):
+   - Concientizar sobre EVITAR la Ceftriaxona en profilaxis perioperatoria de rutina.
+   - Fundamento biológico: Barre la microbiota anaerobia comensal del colon, destruye la barrera colónica protectora y favorece el poder infectarse por patógenos oportunistas como Clostridioides difficile.
+   - Presión selectiva: Induce la selección de enterobacterias productoras de betalactamasas de espectro extendido (BLEE tipo CTX-M, con frecuencia >55% en México según reportes PUCRA/INVIFAR). Debe preservarse exclusivamente para infecciones sistémicas documentadas o sepsis.
+
+3. TIEMPO DE ADMINISTRACIÓN PREVIA A INCISIÓN:
+   - Cefalotina o Cefuroxima: Administrar dentro de los 0 a 60 minutos previos a la incisión quirúrgica.
+   - Vancomicina y fluoroquinolonas: Iniciar entre 60 y 120 minutos previos a la incisión debido a su tiempo de infusión lenta.
+
+4. RECARGA / REFUSIÓN INTRAOPERATORIA:
+   - Esquema estandarizado UVEH: Redosificar Cefalotina CADA 4 HORAS desde el inicio de la primera dosis si la cirugía se prolonga.
+   - En caso de Cefuroxima: Redosificar cada 4 horas.
+   - REGLA DE PÉRDIDA HEMÁTICA: Si la hemorragia supera 1,500 mL en adultos (o 25 mL/kg en pediatría), administrar dosis de refuerzo inmediata tras la reposición de volumen.
+
+5. ESTRATIFICACIÓN DE ALERGIA A BETALACTÁMICOS:
+   - Alergia leve / no mediada por IgE (exantema tardío >72h, intolerancia gastrointestinal): Cefalotina o Cefuroxima son seguras (reactividad cruzada <1%).
+   - Alergia severa Tipo I mediada por IgE (anafilaxia, angioedema, broncoespasmo, urticaria inmediata) o síndrome de Stevens-Johnson: CONTRAINDICACIÓN de betalactámicos. Emplear Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV (+ Aminoglucósido o Aztreonam si requiere cobertura de Gram-negativos).
+
+6. DURACIÓN DE LA PROFILAXIS:
+   - Dosis única preoperatoria habitualmente suficiente.
+   - Suspender estrictamente dentro de las 24 horas posteriores al cierre (máximo 48 horas en cirugía cardiaca mayor).
+   - JAMÁS prolongar la profilaxis por la sola presencia de drenajes quirúrgicos, sondas o catéteres.
+
+Responde siempre en español, con un tono clínico, estructurado, profesional y conciso para aplicación inmediata en quirófano o pase de visita.`;
+
         async function fetchGeminiWithRetry(payload, maxRetries = 3) {
-            const apiKey = ""; // Provided at runtime
+            const apiKey = "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
             let delay = 1000;
@@ -1620,7 +1563,6 @@ Responde siempre con lenguaje médico profesional, claro, empático, estructurad
                         return await response.json();
                     }
 
-                    // If throttled (429) or server error (5xx), retry
                     if (response.status === 429 || response.status >= 500) {
                         await new Promise(r => setTimeout(r, delay));
                         delay *= 2;
@@ -1634,22 +1576,23 @@ Responde siempre con lenguaje médico profesional, claro, empático, estructurad
                     delay *= 2;
                 }
             }
-            throw new Error("No fue posible contactar con el modelo tras reintentos.");
+            throw new Error("No fue posible contactar con el modelo tras varios reintentos.");
         }
 
-        async function generateAIConsultation() {
+        async function executeConsultation() {
             const queryInput = document.getElementById('ai-query-input');
-            const query = queryInput.value.trim();
+            const query = queryInput?.value.trim();
+            const focus = document.getElementById('ai-focus')?.value || 'redose';
 
             if (!query) {
-                showAINotification('Por favor ingrese los datos del paciente o seleccione un caso clínico preestablecido.', 'amber');
+                showNotification('Por favor ingrese los datos del caso o seleccione una de las plantillas predeterminadas.', 'amber');
                 return;
             }
 
-            setAILoading(true);
+            setLoadingState(true);
             document.getElementById('ai-output-title').textContent = 'Dictamen Epidemiológico UVEH - Hospital UPAEP';
 
-            const userPrompt = `Caso clínico quirúrgico para valoración de profilaxis antimicrobiana:\n${query}\n\nPor favor proporcione:\n1. Dictamen Institucional (Indicado / No indicado / Régimen)\n2. Fármaco y dosis exacta (Adulto / Pediátrico / Ajuste por IMC)\n3. Ventana óptima de infusión antes de la incisión\n4. Cronograma de redosificación intraoperatoria (refuerzo a las 4 horas o sangrado masivo)\n5. Manejo específico de microbiota y fundamentación de por qué evitar Ceftriaxona en este caso\n6. Duración máxima postoperatoria permitida`;
+            const userPrompt = `Caso clínico quirúrgico para valoración de profilaxis antimicrobiana:\n${query}\n\nEnfoque solicitado: ${focus}.\n\nPor favor proporcione estructurado:\n1. Dictamen Institucional (Indicado / No indicado / Régimen recomendado)\n2. Fármaco y dosis exacta (Ajuste por IMC o peso ≥ 120 kg)\n3. Ventana exacta de infusión antes de incisión (minutos)\n4. Cronograma de redosificación intraoperatoria (recarga a las 4 horas con Cefalotina o regla de sangrado masivo)\n5. Concientización sobre microbiota y por qué evitar Ceftriaxona en este procedimiento\n6. Duración máxima permitida (< 24 h) y advertencia sobre drenajes.`;
 
             const payload = {
                 contents: [{ parts: [{ text: userPrompt }] }],
@@ -1662,41 +1605,38 @@ Responde siempre con lenguaje médico profesional, claro, empático, estructurad
                 const text = candidate?.content?.parts?.[0]?.text;
 
                 if (text) {
-                    renderAIResult(text);
-                    showAINotification('Dictamen generado exitosamente conforme a los lineamientos UVEH.', 'emerald');
+                    renderResult(text);
+                    showNotification('Dictamen generado exitosamente conforme a los lineamientos UVEH.', 'emerald');
                 } else {
-                    renderAIResult('No se recibió una respuesta legible del servicio. Intente nuevamente.');
+                    renderResult('No se recibió una respuesta legible del modelo. Intente nuevamente.');
                 }
             } catch (err) {
-                renderAIResult(`<div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg"><strong>Error al consultar Gemini IA:</strong> ${err.message || 'Verifique la conexión o intente más tarde.'}</div>`);
-                showAINotification('Ocurrió un error al procesar la solicitud con Gemini.', 'rose');
+                renderResult(`<div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg"><strong>Error al consultar Gemini IA:</strong> ${err.message || 'Verifique la conexión o intente más tarde.'}</div>`);
+                showNotification('Ocurrió un error al procesar la solicitud con Gemini.', 'rose');
             } finally {
-                setAILoading(false);
+                setLoadingState(false);
             }
         }
 
-        async function generateMedicalRecordNote() {
+        async function executeNoteGeneration() {
             const queryInput = document.getElementById('ai-query-input');
-            const query = queryInput.value.trim();
+            const query = queryInput?.value.trim();
 
             if (!query) {
-                showAINotification('Primero ingrese o cargue los datos del paciente para redactar la nota médica.', 'amber');
+                showNotification('Primero ingrese o cargue los datos del paciente para redactar la nota oficial.', 'amber');
                 return;
             }
 
-            setAILoading(true);
-            document.getElementById('ai-output-title').textContent = 'Nota Oficial ECE: Justificación de Profilaxis Quirúrgica';
+            setLoadingState(true);
+            document.getElementById('ai-output-title').textContent = 'Nota Oficial ECE: Justificación de Profilaxis Perioperatoria';
 
-            const userPrompt = `A partir de los siguientes datos clínicos del paciente:\n${query}\n\nRedacta una NOTA MÉDICA PREOPERATORIA OFICIAL DE PROFILAXIS ANTIMICROBIANA lista para pegar en el Expediente Clínico Electrónico (ECE) del Hospital UPAEP.
-Debe tener estructura formal:
-- Fecha / Servicio Quirúrgico
+            const userPrompt = `A partir de los siguientes datos clínicos:\n${query}\n\nRedacta una NOTA MÉDICA PREOPERATORIA OFICIAL DE PROFILAXIS ANTIMICROBIANA lista para ser pegada en el Expediente Clínico Electrónico (ECE) del Hospital UPAEP:
 - Diagnóstico preoperatorio e intervención programada
-- Clasificación de Herida Quirúrgica (CDC)
-- Justificación del régimen antimicrobiano seleccionado (Cefalotina o Cefuroxima 1.5g; o alternativa por alergia IgE)
-- Dosificación, momento de inicio pre-incisión y regla de redosificación a las 4 horas
-- Nota de Stewardship: Justificación del apego a guías institucionales evitando el uso innecesario de cefalosporinas de 3a generación (Ceftriaxona) para protección contra C. difficile y resistencia BLEE
-- Tiempo estricto de suspensión (< 24 h)
-- Firma de validación UVEH / Médico responsable`;
+- Clasificación de Herida Quirúrgica (CDC Clase I, II o III)
+- Justificación del esquema profiláctico seleccionado (Cefalotina 2g o 3g si peso ≥ 120kg, o Cefuroxima 1.5g; o alternativa por alergia IgE)
+- Dosificación, ventana pre-incisión (0-60 min) y regla de recarga intraoperatoria cada 4 horas si la cirugía se prolonga o sangrado ≥ 1500 mL
+- Nota de Concientización / Stewardship: Justificación de apego al programa institucional evitando cefalosporinas de 3ª generación (Ceftriaxona) para proteger la microbiota anaerobia del colon, prevenir infección por Clostridioides difficile y evitar selección de enterobacterias BLEE
+- Tiempo estricto de suspensión (< 24 h del posoperatorio, sin prolongar por drenajes)`;
 
             const payload = {
                 contents: [{ parts: [{ text: userPrompt }] }],
@@ -1709,23 +1649,163 @@ Debe tener estructura formal:
                 const text = candidate?.content?.parts?.[0]?.text;
 
                 if (text) {
-                    renderAIResult(text);
-                    showAINotification('Nota preoperatoria para Expediente generada con éxito.', 'emerald');
+                    renderResult(text);
+                    showNotification('Nota preoperatoria para Expediente generada con éxito.', 'emerald');
                 } else {
-                    renderAIResult('No se pudo estructurar la nota médica. Intente nuevamente.');
+                    renderResult('No se pudo estructurar la nota médica. Intente nuevamente.');
                 }
             } catch (err) {
-                renderAIResult(`<div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg"><strong>Error al generar nota con Gemini:</strong> ${err.message}</div>`);
-                showAINotification('Error en la comunicación con la IA.', 'rose');
+                renderResult(`<div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg"><strong>Error al generar nota médica:</strong> ${err.message}</div>`);
+                showNotification('Error en la comunicación con la IA.', 'rose');
             } finally {
-                setAILoading(false);
+                setLoadingState(false);
             }
         }
 
-        function consultAIFromCalculator() {
-            importCalculatorDataToAI();
-            switchTab('ai');
-            generateAIConsultation();
+        function renderResult(rawText) {
+            const container = document.getElementById('ai-response-container');
+            if (!container) return;
+            let formatted = rawText
+                .replace(/^### (.*$)/gim, '<h4 class="font-bold text-purple-950 text-sm mt-3 mb-1 border-b border-purple-100 pb-1">$1</h4>')
+                .replace(/^## (.*$)/gim, '<h3 class="font-bold text-purple-900 text-base mt-4 mb-1 border-b border-purple-200 pb-1">$1</h3>')
+                .replace(/^# (.*$)/gim, '<h2 class="font-extrabold text-purple-950 text-lg mt-4 mb-2">$1</h2>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-purple-950">$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/^\s*-\s+(.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-0.5">$1</li>')
+                .replace(/^\s*\d+\.\s+(.*$)/gim, '<li class="ml-4 list-decimal text-slate-700 my-0.5">$1</li>')
+                .replace(/\n\n/gim, '<p class="my-2"></p>');
+
+            container.innerHTML = `<div class="p-4 bg-purple-50/40 rounded-xl border border-purple-200">${formatted}</div>`;
+        }
+
+        function setPreset(caseIndex) {
+            const presets = {
+                1: `Paciente masculino de 62 años programado para hemicolectomía izquierda abierta por adenocarcinoma de colon.
+- Peso: 78 kg, Talla: 172 cm (IMC: 26.4 kg/m²).
+- Antecedentes: Refiere intolerancia gástrica leve a penicilina hace 15 años (sin anafilaxia ni angioedema).
+- Duración quirúrgica prevista: 5 horas.
+- Sangrado estimado durante la disección: 1,800 mL.
+- Se requiere esquema óptimo, momento de refuerzo a las 4 horas con Cefalotina y fundamentación de por qué evitar Ceftriaxona.`,
+
+                2: `Paciente femenina de 29 años, primigesta a término de 39 semanas de gestación.
+- Cesárea de urgencia por trabajo de parto detenido y sospecha de desproporción cefalopélvica.
+- Peso: 108 kg, Talla: 161 cm (IMC: 41.6 kg/m², Obesidad Grado III).
+- Sin antecedentes de alergias a medicamentos.
+- Se solicita dosificación preoperatoria antes de la incisión y conducta posoperatoria inmediata.`,
+
+                3: `Paciente masculino de 71 años programado para reemplazo total de cadera derecha con prótesis no cementada.
+- Antecedente de prueba cutánea de alergia dudosa en la infancia sin choque anafiláctico ni urticaria comprobada.
+- Tamizaje nasal positivo para Staphylococcus aureus sensible a meticilina (SAMS).
+- Duración prevista: 3.5 horas.
+- Se requiere dictamen UVEH sobre la seguridad de usar Cefalotina frente a opciones de Clindamicina o Vancomicina.`,
+
+                4: `Médico cirujano solicita aplicar Ceftriaxona 1 g IV preoperatorio por comodidad de dosis única en paciente de 54 años programado para colecistectomía abierta electiva.
+- Sin alergias conocidas. Peso: 74 kg.
+- Se solicita a la UVEH justificación epidemiológica de uso racional sobre por qué utilizar Cefalotina o Cefuroxima 1.5 g y desaconsejar Ceftriaxona (prevención de colitis por C. difficile y resistencia BLEE CTX-M en Puebla).`
+            };
+
+            const input = document.getElementById('ai-query-input');
+            if (input && presets[caseIndex]) {
+                input.value = presets[caseIndex];
+                showNotification(`Plantilla de caso #${caseIndex} cargada con éxito.`, 'purple');
+            }
+        }
+
+        function clearForm() {
+            const input = document.getElementById('ai-query-input');
+            if (input) input.value = '';
+            const container = document.getElementById('ai-response-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-2 text-slate-500">
+                        <span class="text-4xl block">🩺</span>
+                        <p class="font-semibold text-slate-700 text-sm">Campos vacíos</p>
+                        <p class="text-xs max-w-md mx-auto">Ingrese los datos clínicos para iniciar una nueva consulta.</p>
+                    </div>`;
+            }
+            document.getElementById('btn-copy-ai')?.classList.add('hidden');
+            const badge = document.getElementById('ai-status-badge');
+            if (badge) {
+                badge.textContent = 'En espera';
+                badge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500';
+            }
+        }
+
+        function setLoadingState(isLoading) {
+            const spinner = document.getElementById('ai-loading-spinner');
+            const container = document.getElementById('ai-response-container');
+            const badge = document.getElementById('ai-status-badge');
+            const copyBtn = document.getElementById('btn-copy-ai');
+            const submitBtn = document.getElementById('btn-submit-ai');
+
+            if (isLoading) {
+                spinner?.classList.remove('hidden');
+                container?.classList.add('hidden');
+                if (badge) {
+                    badge.textContent = 'Analizando...';
+                    badge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse';
+                }
+                copyBtn?.classList.add('hidden');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+                }
+            } else {
+                spinner?.classList.add('hidden');
+                container?.classList.remove('hidden');
+                if (badge) {
+                    badge.textContent = 'Completado';
+                    badge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800';
+                }
+                copyBtn?.classList.remove('hidden');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        function copyResponseToClipboard() {
+            const container = document.getElementById('ai-response-container');
+            if (!container) return;
+            const textToCopy = container.innerText || container.textContent;
+
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('Dictamen copiado al portapapeles con éxito.', 'emerald');
+                } else {
+                    showNotification('No se pudo copiar automáticamente.', 'amber');
+                }
+            } catch (err) {
+                showNotification('Error al copiar al portapapeles.', 'rose');
+            } finally {
+                document.body.removeChild(tempTextArea);
+            }
+        }
+
+        function showNotification(message, color = 'purple') {
+            const box = document.getElementById('ai-notification-box');
+            if (!box) return;
+            const colorClasses = {
+                emerald: 'bg-emerald-50 border border-emerald-200 text-emerald-900',
+                amber: 'bg-amber-50 border border-amber-200 text-amber-900',
+                rose: 'bg-rose-50 border border-rose-200 text-rose-900',
+                purple: 'bg-purple-50 border border-purple-200 text-purple-900'
+            };
+
+            box.className = `p-3 rounded-lg text-xs space-y-0.5 ${colorClasses[color] || colorClasses.purple}`;
+            box.innerHTML = `<p class="font-medium">${message}</p>`;
+            box.classList.remove('hidden');
+
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 6000);
         }
 
         function importCalculatorDataToAI() {
@@ -1762,124 +1842,15 @@ Debe tener estructura formal:
 - Duración quirúrgica estimada: ${duration} horas
 - Pérdida hemática prevista: ${bloodLoss} mL`;
 
-            document.getElementById('ai-query-input').value = compiledText;
-            showAINotification('Datos del calculador importados exitosamente.', 'purple');
+            const input = document.getElementById('ai-query-input');
+            if (input) input.value = compiledText;
+            showNotification('Datos del calculador importados exitosamente.', 'purple');
         }
 
-        function setAIPreset(caseIndex) {
-            const presets = {
-                1: `Paciente masculino de 62 años sometido a hemicolectomía izquierda abierta por neoplasia de colon.
-- Peso: 78 kg, Talla: 172 cm (IMC 26.4).
-- Alergias: Refiere intolerancia gastrointestinal y rash leve no pruriginoso con penicilina hace 15 años.
-- Cirugía prolongada de 5.5 horas de duración.
-- Sangrado intraoperatorio acumulado de 1,800 mL.
-- Se requiere esquema óptimo, momento de refuerzo y rationale de por qué evitar Ceftriaxona.`,
-
-                2: `Paciente femenina de 29 años, primigesta a término con 39 semanas de gestación.
-- Cesárea de urgencia por trabajo de parto detenido y sospecha de corioamnionitis incipiente.
-- Peso: 108 kg, Talla: 161 cm (IMC: 41.6 kg/m², Obesidad Grado III).
-- Sin alergias conocidas a medicamentos.
-- Se requiere cálculo exacto de dosis ajustada por IMC para Cefalotina o Cefuroxima y pauta pre-incisión.`,
-
-                3: `Paciente masculino de 71 años programado para reemplazo total de cadera derecha con prótesis no cementada.
-- Antecedente de prueba de alergia positiva dudosa a betalactámicos en la infancia pero sin anafilaxia confirmada.
-- Cultivo nasal positivo para S. aureus meticilino-sensible (SAMS).
-- Duración prevista: 3.5 horas.
-- Solicito conducta UVEH sobre uso seguro de Cefalotina frente a alternativas de Clindamicina o Vancomicina.`,
-
-                4: `Médico adscrito solicita justificación científica y epidemiológica para el Comité de Farmacia:
-- Paciente de 54 años con colecistectomía abierta electiva.
-- El cirujano solicita aplicar Ceftriaxona 1g IV preoperatorio por 'mayor comodidad de vida media'.
-- Se solicita fundamentar por qué la UVEH recomienda Cefalotina o Cefuroxima 1.5g y desaconseja Ceftriaxona para prevenir colitis por C. difficile y presión selectiva BLEE (CTX-M en Puebla).`
-            };
-
-            if (presets[caseIndex]) {
-                document.getElementById('ai-query-input').value = presets[caseIndex];
-                showAINotification(`Caso clínico #${caseIndex} cargado. Haga clic en 'Generar Dictamen' para analizar.`, 'purple');
-            }
-        }
-
-        function setAILoading(isLoading) {
-            const spinner = document.getElementById('ai-loading-spinner');
-            const container = document.getElementById('ai-response-container');
-            const badge = document.getElementById('ai-status-badge');
-            const copyBtn = document.getElementById('btn-copy-ai');
-            const submitBtn = document.getElementById('btn-submit-ai');
-
-            if (isLoading) {
-                spinner.classList.remove('hidden');
-                container.classList.add('hidden');
-                badge.textContent = 'Analizando...';
-                badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse';
-                copyBtn.classList.add('hidden');
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
-            } else {
-                spinner.classList.add('hidden');
-                container.classList.remove('hidden');
-                badge.textContent = 'Completado';
-                badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800';
-                copyBtn.classList.remove('hidden');
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
-            }
-        }
-
-        function renderAIResult(rawText) {
-            const container = document.getElementById('ai-response-container');
-            // Basic formatting for Markdown headers, bold, bullet points
-            let formatted = rawText
-                .replace(/^### (.*$)/gim, '<h4 class="font-bold text-purple-950 text-sm mt-3 mb-1 border-b border-purple-100 pb-1">$1</h4>')
-                .replace(/^## (.*$)/gim, '<h3 class="font-bold text-purple-900 text-base mt-4 mb-1 border-b border-purple-200 pb-1">$1</h3>')
-                .replace(/^# (.*$)/gim, '<h2 class="font-extrabold text-purple-950 text-lg mt-4 mb-2">$1</h2>')
-                .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-purple-950">$1</strong>')
-                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-                .replace(/^\s*-\s+(.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-0.5">$1</li>')
-                .replace(/^\s*\d+\.\s+(.*$)/gim, '<li class="ml-4 list-decimal text-slate-700 my-0.5">$1</li>')
-                .replace(/\n\n/gim, '<p class="my-2"></p>');
-
-            container.innerHTML = `<div class="p-4 bg-purple-50/40 rounded-xl border border-purple-200">${formatted}</div>`;
-        }
-
-        function copyAIResponse() {
-            const container = document.getElementById('ai-response-container');
-            const textToCopy = container.innerText || container.textContent;
-
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = textToCopy;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showAINotification('Dictamen copiado al portapapeles con éxito.', 'emerald');
-                } else {
-                    showAINotification('No se pudo copiar automáticamente. Seleccione el texto manualmente.', 'amber');
-                }
-            } catch (err) {
-                showAINotification('Error al copiar al portapapeles.', 'rose');
-            } finally {
-                document.body.removeChild(tempTextArea);
-            }
-        }
-
-        function showAINotification(message, color = 'purple') {
-            const box = document.getElementById('ai-notification-box');
-            const colorClasses = {
-                emerald: 'bg-emerald-50 border border-emerald-200 text-emerald-900',
-                amber: 'bg-amber-50 border border-amber-200 text-amber-900',
-                rose: 'bg-rose-50 border border-rose-200 text-rose-900',
-                purple: 'bg-purple-50 border border-purple-200 text-purple-900'
-            };
-
-            box.className = `p-3 rounded-lg text-xs space-y-1 ${colorClasses[color] || colorClasses.purple}`;
-            box.innerHTML = `<p class="font-medium">${message}</p>`;
-            box.classList.remove('hidden');
-
-            setTimeout(() => {
-                if (box) box.classList.add('hidden');
-            }, 6000);
+        function consultAIFromCalculator() {
+            importCalculatorDataToAI();
+            switchTab('ai');
+            executeConsultation();
         }
     </script>
 </body>
