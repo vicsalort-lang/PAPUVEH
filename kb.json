@@ -1,0 +1,17 @@
+copy(JSON.stringify({
+  version: '2026.09-r1',
+  reglas: {
+    peso_ajuste_kg: 120,
+    dosis_alto_peso_g: 3,
+    sangrado_recarga_ml: 1500,
+    sangrado_recarga_ml_kg_pediatria: 25,
+    ventana_min: { beta_lactamico: 60, vancomicina: 120 },
+    duracion_max_h: 24,
+    recarga_h: { Cefalotina: 4, Cefuroxima: 4, 'Ampicilina-sulbactam': 2, Cefoxitina: 2, Clindamicina: 6 }
+  },
+  politica_ceftriaxona: 'Evitar en profilaxis de rutina; reservar para sepsis o infección documentada.',
+  farmacos: pkTableData,
+  procedimientos: catalogData,
+  referencias: referencesData,
+  documentos: []
+}, null, 2))
