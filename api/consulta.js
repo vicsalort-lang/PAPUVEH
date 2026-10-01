@@ -110,9 +110,12 @@ module.exports = async (req, res) => {
         body: JSON.stringify(payload)
       }
     );
-    if (!r.ok) {
-  console.error('Gemini status', r.status, (await r.text()).slice(0, 300));
-  return res.status(502).json({ error: 'Servicio de IA no disponible (código ' + r.status + ')' });
+  if (!r.ok) {
+  const txt = await r.text();
+  let msg = txt.slice(0, 300);
+  try { msg = JSON.parse(txt).error.message; } catch {}
+  console.error('Gemini', r.status, msg);
+  return res.status(502).json({ error: 'IA no disponible (código ' + r.status + '): ' + msg.slice(0, 200) });
 }
 
     const data = await r.json();
