@@ -1,5 +1,5 @@
 {
-  "version": "2026.09-r5",
+  "version": "2026.09-r6",
   "reglas": {
     "peso_ajuste_kg": 120,
     "dosis_alto_peso_g": 3,
@@ -2097,5 +2097,6 @@
     }
   ],
   "documentos": [],
-  "postura_ceftriaxona": "Postura institucional UVEH: evitar en profilaxis de rutina; reservar para sepsis o infección documentada. ASHP 2013 la lista como opción en cirugía biliar (limitada a colecistitis aguda o infección biliar, no a colecistectomía por patología no infectada) y en colorrectal (con metronidazol, donde aumenta la resistencia a cefalosporinas de 1ª y 2ª generación). Respaldo para la postura: en México E. coli y K. pneumoniae reportan resistencia superior al 50% a cefalosporinas de 3ª y 4ª generación y el fenotipo BLEE en enterobacterias se ubica entre 50% y 60% (Gac Med Mex 2026). La OPS 2005 indica que los antibióticos pueden causar diarrea por Clostridium difficile al alterar la flora; no lo atribuye específicamente a ceftriaxona."
+  "postura_ceftriaxona": "Postura institucional UVEH: evitar en profilaxis de rutina; reservar para sepsis o infección documentada. ASHP 2013 la lista como opción en cirugía biliar (limitada a colecistitis aguda o infección biliar, no a colecistectomía por patología no infectada) y en colorrectal (con metronidazol, donde aumenta la resistencia a cefalosporinas de 1ª y 2ª generación). Respaldo para la postura: en México E. coli y K. pneumoniae reportan resistencia superior al 50% a cefalosporinas de 3ª y 4ª generación y el fenotipo BLEE en enterobacterias se ubica entre 50% y 60% (Gac Med Mex 2026). La OPS 2005 indica que los antibióticos pueden causar diarrea por Clostridium difficile al alterar la flora; no lo atribuye específicamente a ceftriaxona.",
+  "contacto_uveh": ""
 }
