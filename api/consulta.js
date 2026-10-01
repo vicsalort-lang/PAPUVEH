@@ -110,7 +110,10 @@ module.exports = async (req, res) => {
         body: JSON.stringify(payload)
       }
     );
-    if (!r.ok) return res.status(502).json({ error: 'Servicio de IA no disponible' });
+    if (!r.ok) {
+  console.error('Gemini status', r.status, (await r.text()).slice(0, 300));
+  return res.status(502).json({ error: 'Servicio de IA no disponible (código ' + r.status + ')' });
+}
 
     const data = await r.json();
     const salida = JSON.parse(data.candidates[0].content.parts[0].text);
