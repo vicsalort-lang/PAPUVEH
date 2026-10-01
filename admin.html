@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Editor de la base UVEH</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:1000px;margin:20px auto;padding:0 12px;color:#222}
+  .fila{display:flex;gap:16px;flex-wrap:wrap}
+  .col{flex:1;min-width:280px}
+  ul{list-style:none;padding:0;max-height:420px;overflow:auto;border:1px solid #ccc;border-radius:8px}
+  li{padding:8px 10px;border-bottom:1px solid #eee;cursor:pointer;font-size:14px}
+  li.sel{background:#ede9fe;font-weight:600}
+  label{display:block;font-size:12px;font-weight:600;margin-top:8px}
+  input,textarea,select{width:100%;box-sizing:border-box;padding:7px;border:1px solid #bbb;border-radius:6px;font:inherit}
+  textarea{min-height:140px}
+  button{padding:8px 12px;border:0;border-radius:6px;background:#5b21b6;color:#fff;cursor:pointer;margin:8px 6px 0 0}
+  button.sec{background:#64748b} button.del{background:#dc2626}
+  .aviso{background:#fef3c7;border:1px solid #fcd34d;padding:8px;border-radius:6px;font-size:13px}
+</style>
+</head>
+<body>
+<h1>Editor de la base de conocimiento UVEH</h1>
+<p class="aviso">Aquí editas una copia local. Al terminar, pulsa <b>Descargar kb.json</b> y sube ese archivo a tu repositorio de GitHub (reemplazando el anterior). Vercel publicará el cambio automáticamente. No escribas datos de pacientes.</p>
+
+<div>
+  <label>Cargar otro kb.json desde tu computadora (opcional)</label>
+  <input type="file" id="archivo" accept=".json">
+</div>
+
+<div class="fila">
+  <div class="col">
+    <label>Sección</label>
+    <select id="col">
+      <option value="procedimientos">Procedimientos</option>
+      <option value="farmacos">Fármacos</option>
+      <option value="referencias">Referencias</option>
+      <option value="documentos">Documentos de conocimiento</option>
+    </select>
+    <ul id="lista"></ul>
+    <button id="nuevo" class="sec">+ Nuevo</button>
+  </div>
+  <div class="col">
+    <div id="form"></div>
+    <button id="guardar">Guardar cambios</button>
+    <button id="eliminar" class="del">Eliminar</button>
+  </div>
+</div>
+
+<hr>
+<label>Versión de la base (cámbiala cada vez que edites, ej. 2026.10-r1)</label>
+<input id="ver">
+<button id="descargar">⬇ Descargar kb.json</button>
+
+<script>
+const CAMPOS = {
+  procedimientos: [['id','ID único (sin espacios)'],['spec','Especialidad'],['name','Procedimiento'],['class','Clasificación de herida'],['path','Patógenos'],['first','Esquema de 1ª línea'],['alt','Alternativa por alergia IgE'],['dur','Duración / recarga'],['status','Estado (indicada / exento)']],
+  farmacos: [['drug','Fármaco'],['adult','Dosis adulto'],['peds','Dosis pediátrica'],['t12','Vida media'],['redose','Refuerzo']],
+  referencias: [['id','ID único (sin espacios)'],['num','Número o clave'],['title','Título'],['authors','Autores'],['institution','Institución'],['journal','Revista / datos de publicación'],['year','Año'],['cat','Categoría (guia / politica / stewardship / epidemiologia)'],['officialUrl','Enlace oficial (opcional)'],['officialUrlLabel','Texto del enlace (opcional)'],['searchQuery','Búsqueda sugerida'],['summary','Resumen'],['keyTakeaway','Relevancia para la UVEH']],
+  documentos: [['id','ID único (sin espacios)'],['titulo','Título'],['fuente','Fuente o referencia'],['texto','Texto (lo que la IA podrá usar)']]
+};
+const LARGOS = ['texto','summary','keyTakeaway'];
+let KB = null, col = 'procedimientos', idx = -1;
+const $ = id => document.getElementById(id);
+const etiqueta = it => it.name || it.drug || it.title || it.titulo || it.id || '(sin nombre)';
+
+function pintarLista() {
+  const ul = $('lista'); ul.replaceChildren();
+  KB[col].forEach((it, i) => {
+    const li = document.createElement('li');
+    li.textContent = etiqueta(it);
+    if (i === idx) li.className = 'sel';
+    li.onclick = () => { idx = i; pintarLista(); pintarForm(); };
+    ul.append(li);
+  });
+}
+function pintarForm() {
+  const f = $('form'); f.replaceChildren();
+  const it = idx >= 0 ? KB[col][idx] : {};
+  CAMPOS[col].forEach(([k, t]) => {
+    const l = document.createElement('label'); l.textContent = t;
+    const el = document.createElement(LARGOS.includes(k) ? 'textarea' : 'input');
+    el.id = 'f_' + k; el.value = it[k] || '';
+    f.append(l, el);
+  });
+}
+function guardar() {
+  const it = { ...(idx >= 0 ? KB[col][idx] : {}) };
+  CAMPOS[col].forEach(([k]) => { const v = $('f_' + k).value.trim(); if (v || k in it) it[k] = v; });
+  if (!it[CAMPOS[col][0][0]]) return alert('Falta completar el primer campo.');
+  if (idx >= 0) KB[col][idx] = it; else { KB[col].push(it); idx = KB[col].length - 1; }
+  pintarLista();
+}
+function eliminar() {
+  if (idx < 0 || !confirm('¿Eliminar este registro?')) return;
+  KB[col].splice(idx, 1); idx = -1; pintarLista(); pintarForm();
+}
+function iniciar(datos) {
+  KB = datos; KB.documentos = KB.documentos || []; KB.referencias = KB.referencias || [];
+  $('ver').value = KB.version || '';
+  idx = -1; pintarLista(); pintarForm();
+}
+$('col').onchange = e => { col = e.target.value; idx = -1; pintarLista(); pintarForm(); };
+$('nuevo').onclick = () => { idx = -1; pintarLista(); pintarForm(); };
+$('guardar').onclick = guardar;
+$('eliminar').onclick = eliminar;
+$('descargar').onclick = () => {
+  KB.version = $('ver').value.trim() || KB.version;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(KB, null, 2)], { type: 'application/json' }));
+  a.download = 'kb.json'; a.click();
+};
+$('archivo').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { iniciar(JSON.parse(await f.text())); } catch { alert('Archivo JSON no válido.'); }
+};
+fetch('kb.json', { cache: 'no-cache' }).then(r => r.json()).then(iniciar).catch(() => alert('No se pudo cargar kb.json'));
+</script>
+</body>
+</html>
