@@ -1,5 +1,0 @@
-{
-  "functions": {
-    "api/consulta.js": { "includeFiles": "kb.json", "maxDuration": 30 }
-  }
-}
