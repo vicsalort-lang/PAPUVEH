@@ -136,6 +136,7 @@
             // las palabras muy cortas ("de", "la", "y") no ayudan a distinguir
             let palabras = q.split(/\s+/).filter(p => p.length > 2);
             if (!palabras.length) palabras = q.split(/\s+/).filter(Boolean);
+            const frases = [q.replace(/\s+/g, ' '), palabras.map(p => (p.length > 3 && p.endsWith('s') ? p.slice(0, -1) : p)).join(' ')];
             // segunda pasada: solo el comienzo de cada palabra larga, para perdonar errores de escritura
             if (tolerante) palabras = palabras.map(p => (p.length >= 6 ? p.slice(0, 5) : p));
             const coincide = (texto, p) => variantesDe(p).some(x => texto.includes(x));
@@ -143,11 +144,16 @@
             catalogData.forEach((it, orden) => {
                 const nombre = norm(it.name);
                 const resto = norm(`${it.spec} ${it.path} ${it.first} ${it.alias || ''}`);
-                const todoEnNombre = palabras.every(p => coincide(nombre, p));
-                const todoEnTexto = palabras.every(p => coincide(nombre + ' ' + resto, p));
-                if (todoEnTexto) resultados.push({ it, puntos: (todoEnNombre ? 0 : 1) * 1000 + orden });
+                if (!palabras.every(p => coincide(nombre + ' ' + resto, p))) return;
+                // 0: es exactamente el nombre; 1: el nombre contiene lo escrito tal cual ("catarata complicada");
+                // 2: el nombre contiene todas las palabras; 3: las palabras aparecen en otros datos (sinónimos, patógenos, esquema)
+                let nivel = 3;
+                if (!tolerante && frases.includes(nombre)) nivel = 0;
+                else if (!tolerante && frases.some(f => nombre.includes(f))) nivel = 1;
+                else if (palabras.every(p => coincide(nombre, p))) nivel = 2;
+                resultados.push({ it, puntos: nivel * 1000 + orden });
             });
-            // primero las que coinciden en el nombre; a igualdad, el orden del catálogo
+            // a igualdad de nivel, el orden del catálogo
             return resultados.sort((x, y) => x.puntos - y.puntos).map(r => r.it);
         }
 
@@ -168,6 +174,8 @@
                 procSelect.value = hallados[0].id;          // se completa solo con la mejor coincidencia (el resto queda en la lista)
                 elegirProcedimiento();                      // sincroniza la especialidad y muestra los datos y el esquema
             } else {
+                const esp = porId('calc-specialty');
+                if (esp) esp.value = '';                    // sin resultados: no se queda la especialidad de la búsqueda anterior
                 ocultar(porId('calc-paso-datos')); estadoVacio(true);
             }
         }
