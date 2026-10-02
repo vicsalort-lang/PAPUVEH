@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Registro de accesos - UVEH UPAEP</title>
+<style>
+  body { margin:0; font-family: ui-sans-serif, system-ui, sans-serif; background:#f1f5f9; color:#1e293b; }
+  header { background:#3b0764; color:#fff; border-bottom:2px solid #a855f7; padding:12px 20px; }
+  header h1 { margin:0; font-size:18px; } header p { margin:2px 0 0; font-size:12px; color:#d8b4fe; }
+  main { max-width:900px; margin:20px auto; padding:0 14px; }
+  .caja { background:#fff; border:1px solid #e9d5ff; border-radius:12px; padding:16px; margin-bottom:14px; }
+  input { padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px; font:inherit; min-width:260px; }
+  button { padding:8px 12px; border:0; border-radius:8px; background:#6b21a8; color:#fff; font:inherit; font-weight:700; cursor:pointer; margin-left:6px; }
+  button.sec { background:#475569; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid #e2e8f0; }
+  th { background:#faf5ff; color:#581c87; }
+  #estado { font-size:12px; color:#64748b; margin:8px 0; }
+  .error { color:#9f1239; }
+</style>
+</head>
+<body>
+<header><h1>Registro de accesos</h1><p>UVEH UPAEP • Uso exclusivo de la UVEH</p></header>
+<main>
+  <div class="caja">
+    <label for="token"><strong>Token de administración</strong></label><br>
+    <input id="token" type="password" autocomplete="off" placeholder="El que configuró en Vercel (ACCESO_ADMIN_TOKEN)">
+    <button id="cargar">Ver registro</button>
+    <button id="csv" class="sec">Descargar CSV</button>
+    <div id="estado"></div>
+  </div>
+  <div class="caja">
+    <table><thead><tr><th>Fecha y hora (hora del centro de México)</th><th>Cédula / identificador</th><th>Nombre</th></tr></thead><tbody id="filas"></tbody></table>
+  </div>
+</main>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const fmt = iso => { try { return new Date(iso).toLocaleString('es-MX', { timeZone: 'America/Mexico_City', hour12: false }); } catch { return iso; } };
+  async function pedir(extra) {
+    const r = await fetch('/api/registro?n=1000' + (extra || ''), { headers: { 'x-admin-token': $('token').value } });
+    return r;
+  }
+  $('cargar').onclick = async () => {
+    $('estado').className = ''; $('estado').textContent = 'Cargando…';
+    const r = await pedir();
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { $('estado').className = 'error'; $('estado').textContent = d.error || ('Error ' + r.status); return; }
+    $('estado').textContent = d.total + ' accesos (más recientes primero). Almacén: ' + d.almacen + (d.almacen === 'memoria' ? ' — SOLO PRUEBAS: no es permanente.' : '');
+    $('filas').replaceChildren(...d.entradas.map(e => { const tr = document.createElement('tr'); [fmt(e.t), e.cedula, e.nombre].forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.append(td); }); return tr; }));
+  };
+  $('csv').onclick = async () => {
+    const r = await pedir('&formato=csv');
+    if (!r.ok) { const d = await r.json().catch(() => ({})); $('estado').className = 'error'; $('estado').textContent = d.error || ('Error ' + r.status); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = 'registro_accesos_uveh.csv'; a.click();
+  };
+})();
+</script>
+</body>
+</html>

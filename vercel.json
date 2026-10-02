@@ -1,0 +1,14 @@
+{
+  "proxy": {
+    "entrypoint": "proxy.js"
+  },
+  "functions": {
+    "api/acceso.js": {
+      "includeFiles": "datos/acceso.json",
+      "maxDuration": 15
+    },
+    "api/registro.js": {
+      "maxDuration": 15
+    }
+  }
+}
