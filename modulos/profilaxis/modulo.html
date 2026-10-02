@@ -1,0 +1,507 @@
+        <!-- TAB 1: CALCULADOR -->
+        <section data-sub="calculator" id="tab-calculator" class="space-y-6">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>⚡</span> Prescripción Guiada por UVEH Hospital UPAEP</h2>
+                        <p class="text-sm text-slate-600 mt-1">
+                            Seleccione la cirugía y condiciones del paciente para calcular el esquema preoperatorio, momento de infusión y tiempo de recarga intraoperatoria con <strong>Cefalotina</strong> (y <strong>Cefuroxima 1.5 g</strong> en cirugía cardiaca y de cabeza y cuello) u otras opciones de las guías de la base.
+                        </p>
+                    </div>
+                    <span class="hidden sm:inline-block px-3 py-1 bg-purple-100 text-purple-900 text-xs font-bold rounded-full border border-purple-300">Guía UVEH 2026</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                    <h3 class="font-bold text-purple-900 text-md border-b pb-2 flex items-center gap-2"><span>📝</span> Datos Quirúrgicos y del Paciente</h3>
+
+                    <form id="cdss-form" onsubmit="event.preventDefault(); UVEH.m.profilaxis.calculateCDSS();" class="space-y-3 text-xs sm:text-sm">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Buscar cirugía por nombre</label>
+                            <input type="text" id="calc-proc-search" oninput="UVEH.m.profilaxis.searchProcedureOptions()" autocomplete="off" placeholder="Ej. catarata, hernia umbilical, fístula AV, amigdalectomía..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            <p class="text-[11px] text-slate-500 mt-1">Busca entre todas las especialidades. También puede elegir la especialidad abajo.</p>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Especialidad Quirúrgica</label>
+                            <select id="calc-specialty" onchange="const bs = document.getElementById('calc-proc-search'); if (bs) bs.value = ''; UVEH.m.profilaxis.updateProcedureOptions()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                <option value="cardiovascular">Cirugía Cardiovascular y Torácica</option>
+                                <option value="vascular">Cirugía Vascular Periférica</option>
+                                <option value="digestivo">Digestivo Superior, Bariátrica y Pared Abdominal</option>
+                                <option value="hepatobiliar">Cirugía Hepatopancreatobiliar</option>
+                                <option value="colorrectal">Intestino Delgado, Apéndice y Colorrectal</option>
+                                <option value="urologia">Cirugía Urológica</option>
+                                <option value="ginecologia">Ginecología y Obstetricia</option>
+                                <option value="neurocirugia">Neurocirugía</option>
+                                <option value="ortopedia">Ortopedia y Traumatología</option>
+                                <option value="cabezacuello">Cabeza y Cuello (cáncer y prótesis)</option>
+                                <option value="orl">Otorrinolaringología</option>
+                                <option value="maxilofacial">Cirugía Maxilofacial y Dental</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                                <option value="mama">Mama y Endocrino</option>
+                                <option value="nefrologia">Accesos de Diálisis (Nefrología)</option>
+                                <option value="plastica">Cirugía Plástica y Reconstructiva</option>
+                                <option value="radiologia">Radiología Intervencionista</option>
+                                <option value="pediatria">Cirugía Pediátrica</option>
+                                <option value="todas">Todas las especialidades</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Procedimiento Específico</label>
+                            <select id="calc-procedure" onchange="UVEH.m.profilaxis.syncEspecialidadConProcedimiento(); UVEH.m.profilaxis.calculateCDSS()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none"></select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Abordaje</label>
+                                <select id="calc-approach" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                    <option value="abierto">Abierto</option>
+                                    <option value="laparoscopico">Laparoscópico / Mínima Invasión</option>
+                                    <option value="endoscopico">Endoscópico / Percutáneo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">¿Prótesis / Implante?</label>
+                                <select id="calc-prosthesis" onchange="UVEH.m.profilaxis.calculateCDSS()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                    <option value="no">No</option>
+                                    <option value="si">Sí (Malla, osteosíntesis, prótesis)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Edad (años)</label>
+                                <input type="number" id="calc-age" value="45" min="0" max="120" oninput="UVEH.m.profilaxis.calculateBMI(); UVEH.m.profilaxis.calculateCDSS();" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Peso (kg)</label>
+                                <input type="number" id="calc-weight" value="70" min="1" max="300" step="0.5" oninput="UVEH.m.profilaxis.calculateBMI(); UVEH.m.profilaxis.calculateCDSS();" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Talla (cm)</label>
+                                <input type="number" id="calc-height" value="170" min="40" max="230" oninput="UVEH.m.profilaxis.calculateBMI(); UVEH.m.profilaxis.calculateCDSS();" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div id="bmi-badge" class="p-2 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700 flex justify-between items-center">
+                            <span>Índice de Masa Corporal (IMC): <strong id="calc-bmi-val">24.2</strong> kg/m²</span>
+                            <span id="calc-bmi-cat" class="px-2 py-0.5 rounded text-white bg-emerald-600 text-[10px]">Normal</span>
+                        </div>
+
+                        <div class="space-y-2 pt-1 border-t">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="calc-obstetric" onchange="UVEH.m.profilaxis.obstetricaManual(); UVEH.m.profilaxis.mostrarNotaObstetrica(false); UVEH.m.profilaxis.calculateCDSS()" class="rounded text-purple-600 focus:ring-purple-500 h-4 w-4">
+                                <span class="text-slate-700 font-medium">Paciente Obstétrica en Gestación</span>
+                            </label>
+
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Alergia a Betalactámicos</label>
+                                <select id="calc-allergy" onchange="UVEH.m.profilaxis.calculateCDSS()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                    <option value="none">Sin alergia conocida (Tolerancia normal)</option>
+                                    <option value="mild">Leve / No mediada por IgE (Exantema tardío, intolerancia GI)</option>
+                                    <option value="severe">Severa Tipo I IgE (Anafilaxia, broncoespasmo, angioedema)</option>
+                                </select>
+                            </div>
+
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="calc-mrsa" onchange="UVEH.m.profilaxis.calculateCDSS()" class="rounded text-purple-600 focus:ring-purple-500 h-4 w-4">
+                                <span class="text-slate-700 font-medium">Colonización o alto riesgo de SARM (MRSA)</span>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t">
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Duración Prevista (h)</label>
+                                <input type="number" id="calc-duration" value="4.5" step="0.5" min="0.5" max="24" oninput="UVEH.m.profilaxis.calculateCDSS()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Sangrado Previsto (mL)</label>
+                                <input type="number" id="calc-bloodloss" value="200" step="50" min="0" max="10000" oninput="UVEH.m.profilaxis.calculateCDSS()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 bg-purple-800 hover:bg-purple-900 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-2">
+                            <span>🔍</span> Recalcular Esquema UVEH
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div id="cdss-result-card" class="bg-white rounded-xl shadow-sm border border-purple-200 p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl" id="status-icon">✅</span>
+                                <div>
+                                    <span class="text-xs uppercase font-bold text-purple-700 tracking-wider">Dictamen UVEH Hospital UPAEP</span>
+                                    <h3 class="text-lg font-bold text-purple-950" id="result-status-title">Profilaxis Antimicrobiana Indicada</h3>
+                                </div>
+                            </div>
+                            <span id="result-wound-class" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">Clase II: Limpia-Contaminada</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-purple-50 border border-purple-200 space-y-2">
+                                <span class="text-xs font-bold text-purple-900 uppercase tracking-wider block">Esquema Primario Recomendado</span>
+                                <p class="text-base font-extrabold text-purple-950" id="result-primary-drug">Cefalotina 2 g IV (o Cefuroxima 1.5 g IV)</p>
+                                <p class="text-xs text-purple-800" id="result-primary-dose-note">Dosis estándar. Infundir en 3-5 min IV lenta.</p>
+                                <div class="pt-2 border-t border-purple-200 text-xs font-medium text-purple-900 flex justify-between">
+                                    <span>Ventana Previa a Incisión:</span>
+                                    <strong id="result-timing">0 a 60 minutos antes</strong>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Alternativa por Alergia Severa (IgE)</span>
+                                <p class="text-sm font-bold text-slate-800" id="result-alt-drug">Clindamicina 900 mg IV</p>
+                                <p class="text-xs text-slate-600" id="result-alt-note">Vancomicina 15 mg/kg IV si hay indicación por Gram-positivos o SARM.</p>
+                                <div class="pt-2 border-t border-slate-200 text-xs font-medium text-slate-700 flex justify-between">
+                                    <span>Ventana Alternativa (Vancomicina):</span>
+                                    <strong id="result-alt-timing">60 a 120 min previos</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                                <span class="font-bold text-amber-900 block mb-1">⏱️ Recarga / Refuerzo Intraoperatorio</span>
+                                <p class="text-amber-800" id="result-redosing-text">Redosificar Cefalotina cada 4 horas si la cirugía se prolonga.</p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                <span class="font-bold text-blue-900 block mb-1">🛑 Duración Máxima de Profilaxis</span>
+                                <p class="text-blue-800" id="result-duration-text">Dosis única preoperatoria. Suspender dentro de las 24 horas posteriores al cierre.</p>
+                            </div>
+                        </div>
+
+                        <div id="result-alerts-container" class="space-y-2"></div>
+
+                        <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-900 flex items-start gap-2">
+                            <span class="text-base">💡</span>
+                            <div>
+                                <strong>Uso Racional de Antimicrobianos UVEH: Concientización sobre Ceftriaxona</strong>
+                                <p class="text-[11px] mt-0.5 text-purple-800" id="ceftriaxone-policy">
+                                    Postura institucional UVEH: evitar la Ceftriaxona en profilaxis perioperatoria de rutina y reservarla para sepsis o infecciones sistémicas documentadas. En México, <em>E. coli</em> y <em>K. pneumoniae</em> superan el 50% de resistencia a cefalosporinas de 3.ª y 4.ª generación y el fenotipo BLEE en enterobacterias se reporta entre 50% y 60% (Gac Med Mex 2026). Los antibióticos en general pueden causar diarrea por <em>Clostridioides difficile</em> al alterar la flora intestinal (OPS 2005).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg text-xs border border-slate-200">
+                            <span class="font-bold text-slate-700">Patógenos y Flora Quirúrgica Diana: </span>
+                            <span class="text-slate-600" id="result-pathogens">Staphylococcus aureus, S. epidermidis, Estreptococos, Bacilos Gramnegativos entéricos comunes.</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CATÁLOGO -->
+        <section data-sub="catalog" id="tab-catalog" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>📂</span> Catálogo Completo de Procedimientos Quirúrgicos y Profilaxis</h2>
+                <p class="text-sm text-slate-600 mt-1">Consulte procedimiento, clasificación de herida, esquema de primera línea, alternativas por alergia a betalactámicos y duración. <strong><span id="catalog-count"></span> procedimientos</strong> en la base; cada uno indica su fuente.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="w-full md:w-1/2">
+                    <input type="text" id="catalog-search" oninput="UVEH.m.profilaxis.filterCatalog()" placeholder="🔍 Buscar cirugía (ej. cesárea, colectomía, prótesis de cadera...)" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                </div>
+                <div class="w-full md:w-1/2 flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Especialidad:</span>
+                    <select id="catalog-filter-spec" onchange="UVEH.m.profilaxis.filterCatalog()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                        <option value="all">Todas las Especialidades</option>
+                        <option value="Cardiovascular">Cirugía Cardiovascular</option>
+                        <option value="Vascular">Cirugía Vascular</option>
+                        <option value="Digestivo">Cirugía Digestiva / Bariátrica / Pared</option>
+                        <option value="Hepatobiliar">Cirugía Hepatobiliar</option>
+                        <option value="Colorrectal">Intestino y Colorrectal</option>
+                        <option value="Urología">Cirugía Urológica</option>
+                        <option value="Ginecología">Ginecología y Obstetricia</option>
+                        <option value="Neurocirugía">Neurocirugía</option>
+                        <option value="Ortopedia">Ortopedia y Traumatología</option>
+                        <option value="Cabeza y Cuello">Cabeza y Cuello (cáncer y prótesis)</option>
+                        <option value="Otorrinolaringología">Otorrinolaringología</option>
+                        <option value="Maxilofacial y Dental">Cirugía Maxilofacial y Dental</option>
+                        <option value="Oftalmología">Oftalmología</option>
+                        <option value="Mama y Endocrino">Mama y Endocrino</option>
+                        <option value="Nefrología (accesos)">Accesos de Diálisis (Nefrología)</option>
+                        <option value="Plástica">Cirugía Plástica</option>
+                        <option value="Radiología">Radiología Intervencionista</option>
+                        <option value="Pediátrica">Cirugía Pediátrica</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="catalog-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- TAB 3: FARMACOCINÉTICA -->
+        <section data-sub="pk" id="tab-pk" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-100">
+                <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>💊</span> Farmacocinética y Cronograma de Redosificación</h2>
+                <p class="text-sm text-slate-600 mt-1">Comparación de vidas medias plasmáticas y cronograma de recarga intraoperatoria según el esquema institucional UPAEP.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                    <h3 class="font-bold text-purple-900 text-sm flex items-center gap-2"><span>📊</span> Vidas Medias (horas) de Fármacos Profilácticos en Adultos</h3>
+                    <div class="chart-container"><canvas id="pkChart"></canvas></div>
+                </div>
+
+                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <h3 class="font-bold text-purple-900 text-sm flex items-center gap-2"><span>⏱️</span> Simulador de Alerta de Refuerzo Intraoperatorio</h3>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Antimicrobiano Administrado</label>
+                            <select id="sim-drug" onchange="UVEH.m.profilaxis.runRedoseSimulation()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                                <option value="Cefalotina">Cefalotina (Esquema UVEH)</option>
+                                <option value="Cefuroxima">Cefuroxima 1.5 g</option>
+                                <option value="Ampicilina-sulbactam">Ampicilina / Sulbactam</option>
+                                <option value="Cefoxitina">Cefoxitina</option>
+                                <option value="Clindamicina">Clindamicina</option>
+                                <option value="Vancomicina">Vancomicina (sin refuerzo intraoperatorio)</option>
+                                <option value="Metronidazol">Metronidazol (sin refuerzo intraoperatorio)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Hora de Inicio de Primera Dosis Preoperatoria</label>
+                            <input type="time" id="sim-time" value="08:00" onchange="UVEH.m.profilaxis.runRedoseSimulation()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                        </div>
+                        <div class="p-4 rounded-xl bg-purple-50 border border-purple-200 text-xs space-y-1.5">
+                            <strong class="text-purple-950 block text-sm" id="sim-output-time">Primera Dosis de Refuerzo: 12:00 hrs (+4h)</strong>
+                            <p class="text-purple-800" id="sim-output-desc"></p>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900">
+                        <strong>⚠️ Regla de Pérdida Hemática:</strong> Administrar dosis de refuerzo inmediata si la pérdida de sangre supera 1,500 mL en adultos o 25 mL/kg en niños.
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+                <h3 class="font-bold text-purple-950 text-sm">Tabla de Parámetros Farmacocinéticos y Dosificación UVEH</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-purple-900 text-white border-b">
+                                <th class="p-2.5 rounded-tl-lg">Antimicrobiano</th>
+                                <th class="p-2.5">Dosis Adulto</th>
+                                <th class="p-2.5">Dosis Pediátrica</th>
+                                <th class="p-2.5">Vida Media</th>
+                                <th class="p-2.5 rounded-tr-lg">Intervalo de Refuerzo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pk-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="p-3 bg-sky-50 border border-sky-200 rounded-lg text-[11px] text-sky-900 space-y-1">
+                    <strong class="block text-xs">Cefalotina como equivalente local de cefazolina</strong>
+                    <p id="cefalotina-note"></p>
+                    <p>Ver en Bibliografía la categoría «Cefalotina vs Cefazolina» (LUTRO-2025, PAWLOY-2023, NIX-1985, SOHN-1984, GLICK-1990, SADLEIR-2016, YEH-2001).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ALERGIAS -->
+        <section data-sub="allergies" id="tab-allergies" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-100">
+                <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>🛡️</span> Manejo de Alergias a Betalactámicos y Resistencia (SARM / BLEE)</h2>
+                <p class="text-sm text-slate-600 mt-1">Estratificación del riesgo inmunitario y estrategia de concientización y uso racional de antimicrobianos en el Hospital UPAEP.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-6 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+                    <h3 class="font-bold text-purple-950 text-sm border-b pb-2">Estratificación Inmunológica de Alergia a Penicilinas</h3>
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1">
+                            <span class="font-bold text-emerald-900 block text-sm">🟢 Reacción Leve / No Mediada por IgE</span>
+                            <p class="text-emerald-800">Manifestaciones: Exantema maculopapular tardío (>72 horas tras el fármaco), náuseas, cefalea o intolerancia digestiva aislada.</p>
+                            <p class="text-emerald-900 font-semibold pt-1">Conducta UVEH: Cefalotina o Cefuroxima pueden utilizarse si la reacción no fue inmediata ni grave. La reactividad cruzada penicilina-cefalosporina es baja: la cifra histórica de ~10% sobrestima el riesgo (HCTM 2018).</p>
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1">
+                            <span class="font-bold text-rose-900 block text-sm">🔴 Reacción Severa Tipo I (Mediada por IgE) o Exfoliativa</span>
+                            <p class="text-rose-800">Manifestaciones: Anafilaxia, edema laríngeo, broncoespasmo, urticaria inmediata (menor a 1 hora), hipotensión, síndrome de Stevens-Johnson o NET.</p>
+                            <p class="text-rose-900 font-semibold pt-1">Conducta UVEH: Evitar betalactámicos. Utilizar Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV ± Gentamicina o Aztreonam.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                    <div class="p-4 bg-purple-50 rounded-xl border border-purple-200 space-y-2 text-xs">
+                        <h4 class="font-bold text-purple-950 text-sm">¿Por qué EVITAR Ceftriaxona en Profilaxis Quirúrgica?</h4>
+                        <ol class="space-y-2 text-purple-900 list-decimal list-inside">
+                            <li><strong>Alta carga de resistencia en México:</strong> el fenotipo BLEE en enterobacterias se reporta entre 50% y 60%, con CTX-M como enzima más frecuente, y <em>E. coli</em> y <em>K. pneumoniae</em> superan el 50% de resistencia a cefalosporinas de 3.ª y 4.ª generación (Gac Med Mex 2026). El uso innecesario de antimicrobianos es un impulsor de la resistencia.</li>
+                            <li><strong>Riesgo de <em>Clostridioides difficile</em> asociado a antibióticos:</strong> los cambios de la flora intestinal por antibióticos pueden causar diarrea por proliferación de <em>C. difficile</em> (OPS 2005). La fuente lo plantea para los antibióticos en general, no solo para ceftriaxona.</li>
+                            <li><strong>Preservación del arsenal terapéutico:</strong> Ceftriaxona debe reservarse para infecciones sistémicas documentadas o sepsis, no para prevención en sitio quirúrgico.</li>
+                        </ol>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-purple-950 text-xs mb-2">Resistencia en E. coli (INVIFAR / PUCRA México)</h4>
+                        <div class="chart-container" style="height: 260px;"><canvas id="bleeChart"></canvas></div>
+                        <p class="text-[10px] text-slate-500 mt-1">Fuente: Cornejo-Juárez P et al. Gac Med Mex 2026;162:369-387, Tabla 1. La ceftriaxona no se reporta en la tabla; cefotaxima, ceftazidima y cefepima son los marcadores de cefalosporinas de 3.ª y 4.ª generación. Sin cifras específicas de Puebla.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: CDC -->
+        <section data-sub="cdc" id="tab-cdc" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>📋</span> Clasificación CDC de Heridas y Criterios UVEH</h2>
+                <p class="text-sm text-slate-600 mt-1">Evaluación de la contaminación quirúrgica para fundamentar la necesidad de profilaxis antimicrobiana perioperatoria. Criterios de indicación según las guías ASHP 2013 y HCTM 2018.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-emerald-500">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Clase I</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Herida Limpia</h3>
+                    <p class="text-xs text-slate-600">Cirugía electiva sin apertura de tractos colonizados. Cierre primario.</p>
+                    <div class="pt-2 border-t text-xs font-semibold text-emerald-700">Indicación: No rutinaria. Solo si hay prótesis o implante.</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-blue-500">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Clase II</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Limpia-Contaminada</h3>
+                    <p class="text-xs text-slate-600">Penetración controlada de tracto digestivo, biliar o urogenital sin derrame inusual.</p>
+                    <div class="pt-2 border-t text-xs font-semibold text-blue-700">Indicación: Indicada (esquema según el procedimiento; Cefalotina como base).</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-amber-500">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Clase III</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Herida Contaminada</h3>
+                    <p class="text-xs text-slate-600">Trauma reciente, transgresión grave de asepsia o inflamación aguda no purulenta.</p>
+                    <div class="pt-2 border-t text-xs font-semibold text-amber-800">Indicación: Profilaxis perioperatoria de dosis única o menor a 24 h.</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2 border-t-4 border-t-rose-500">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Clase IV</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Sucia o Infectada</h3>
+                    <p class="text-xs text-slate-600">Infección previa activa, pus o perforación de víscera hueca.</p>
+                    <div class="pt-2 border-t text-xs font-semibold text-rose-800">Indicación: Tratamiento terapéutico (no es profilaxis).</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 7: BIBLIOGRAFÍA -->
+        <section data-sub="references" id="tab-references" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-purple-950 flex items-center gap-2"><span>📚</span> Bibliografía</h2>
+                        <p class="text-sm text-slate-600 mt-1">Repositorio de evidencia científica y guías base del protocolo.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="ref-count" class="px-3 py-1 bg-purple-100 text-purple-900 font-bold text-xs rounded-full border border-purple-300"></span>
+                        <button onclick="UVEH.m.profilaxis.downloadBibliographyText()" class="px-3 py-2 bg-purple-900 hover:bg-purple-950 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1">
+                            <span>📥</span> Descargar (.txt)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="w-full md:w-1/2">
+                    <input type="text" id="ref-search" oninput="UVEH.m.profilaxis.filterReferences()" placeholder="🔍 Buscar en bibliografía (título, autor, institución)..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                </div>
+                <div class="w-full md:w-1/2 flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Filtrar por:</span>
+                    <select id="ref-filter-cat" onchange="UVEH.m.profilaxis.filterReferences()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-600 focus:outline-none">
+                        <option value="all">Todos los Documentos</option>
+                        <option value="guia">Guías Clínicas Oficiales</option>
+                        <option value="stewardship">Stewardship y Optimización</option>
+                        <option value="epidemiologia">Epidemiología y RAM</option>
+                        <option value="manual">Manuales de Referencia</option>
+                        <option value="equivalencia">Cefalotina vs Cefazolina</option>
+                        <option value="frecuencia">Frecuencia Quirúrgica</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="references-cards-container" class="space-y-4"></div>
+        </section>
+
+        <!-- TAB 8: IA -->
+        <section data-sub="ai" id="tab-ai" class="space-y-6 hidden">
+            <div class="rounded-xl p-5 shadow-sm border border-slate-200 bg-white">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Consultor experto</h2>
+                    <p class="text-sm text-slate-600 mt-1">
+                        Reservado para casos de alta complejidad que el Calculador y el Catálogo no resuelven: varios factores de riesgo a la vez, alergias dudosas o procedimientos que no aparecen en la base.
+                        Para la mayoría de las cirugías, el esquema se obtiene directamente en el Calculador. Responde únicamente con la base de conocimiento UVEH; no sustituye el juicio clínico.
+                    </p>
+                    <label class="mt-3 flex items-start gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="ai-gate" onchange="UVEH.m.profilaxis.aplicarGate()" class="mt-0.5">
+                        <span>Confirmo que ya revisé el Calculador y el Catálogo y que mi caso es de alta complejidad.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b pb-2">
+                        <h3 class="font-bold text-slate-800 text-sm">Planteamiento del caso quirúrgico</h3>
+                        <button onclick="UVEH.m.profilaxis.importCalculatorDataToAI()" class="text-xs text-slate-600 hover:text-slate-900 font-semibold underline">Cargar datos del Calculador</button>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-600">Casos clínicos de ejemplo (clic para cargar):</label>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <button onclick="UVEH.m.profilaxis.setAIPreset(1)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">Colectomía + Sangrado 1800mL</button>
+                            <button onclick="UVEH.m.profilaxis.setAIPreset(2)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">Cesárea + Obesidad IMC 41</button>
+                            <button onclick="UVEH.m.profilaxis.setAIPreset(3)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">Alergia Dudosa a Penicilina</button>
+                            <button onclick="UVEH.m.profilaxis.setAIPreset(4)" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 rounded-lg border border-slate-200 transition">Concientización Ceftriaxona</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción del paciente y cirugía:</label>
+                        <textarea id="ai-query-input" rows="5" maxlength="1500" placeholder="Describa el tipo de intervención, antecedentes de alergias, duración prevista, comorbilidades..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none leading-relaxed"></textarea>
+                        <p class="text-[11px] text-rose-700 font-semibold mt-1">🔒 No ingrese nombres ni datos identificables del paciente (expediente, CURP, teléfono, etc.).</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <button id="btn-submit-ai" disabled onclick="UVEH.m.profilaxis.generateAIConsultation()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center justify-center gap-2 opacity-60 cursor-not-allowed">
+                            Generar dictamen clínico
+                        </button>
+                        <button id="btn-ece-ai" disabled onclick="UVEH.m.profilaxis.generateMedicalRecordNote()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-lg border border-slate-300 transition flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed">
+                            Redactar nota para expediente clínico (ECE)
+                        </button>
+                    </div>
+
+                    <div id="ai-notification-box" class="hidden p-3 rounded-lg text-xs space-y-1"></div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4 flex flex-col justify-between min-h-[460px]">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2 flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-slate-800 text-sm" id="ai-output-title">Dictamen del Asistente Epidemiológico UVEH</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="UVEH.m.profilaxis.copyAIResponse()" id="btn-copy-ai" class="hidden px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded border border-slate-300 transition flex items-center gap-1">
+                                    <span>📋</span> Copiar al Portapapeles
+                                </button>
+                                <span id="ai-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500">En espera</span>
+                            </div>
+                        </div>
+
+                        <div id="ai-loading-spinner" class="hidden py-12 flex flex-col items-center justify-center space-y-3 text-purple-900">
+                            <div class="w-10 h-10 border-4 border-purple-300 border-t-purple-800 rounded-full animate-spin"></div>
+                            <p class="text-xs font-semibold animate-pulse">Consultando la base de conocimiento UVEH...</p>
+                        </div>
+
+                        <div id="ai-response-container" class="max-w-none text-xs text-slate-700 leading-relaxed space-y-3">
+                            <div class="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-2 text-slate-500">
+                                <span class="text-3xl block">🩺</span>
+                                <p class="font-semibold text-slate-700 text-sm">Sin consulta activa</p>
+                                <p class="text-xs max-w-md mx-auto">Ingrese los datos de su paciente o seleccione uno de los casos preestablecidos para generar una recomendación basada en la base de conocimiento UVEH.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Soporte a la decisión asistido por IA • Valide con el Comité de Infecciones UVEH</span>
+                        <span>Hospital UPAEP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
