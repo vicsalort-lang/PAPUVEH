@@ -1,5 +1,0 @@
-{
-  "functions": {
-    "api/profilaxis.js": { "includeFiles": "modulos/profilaxis/kb.json", "maxDuration": 60 }
-  }
-}
