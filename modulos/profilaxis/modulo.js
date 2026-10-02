@@ -86,12 +86,15 @@
             if (!porId('calc-procedure')) return;
             if (!specVal) {                       // aún sin especialidad: solo se ven el buscador y la especialidad
                 ocultar(porId('calc-paso-proc')); ocultar(porId('calc-paso-datos')); estadoVacio(true);
+                const avisoVacio = porId('calc-coincidencias'); if (avisoVacio) avisoVacio.classList.add('hidden');
                 return;
             }
             const mappedSpec = specialtyMapping[specVal] || specVal;
             const filtered = catalogData.filter(item => item.spec.toLowerCase() === mappedSpec.toLowerCase());
             const lista = filtered.length > 0 ? filtered : catalogData;
             const procSelect = llenarProcedimientos(lista, false);
+            const avisoCoinc = porId('calc-coincidencias');
+            if (avisoCoinc) avisoCoinc.classList.add('hidden');
             revelar(porId('calc-paso-proc'));
             if (procSelect.value) { revelar(porId('calc-paso-datos')); calculateCDSS(); }
             else { ocultar(porId('calc-paso-datos')); estadoVacio(true); }
@@ -122,20 +125,51 @@
             if (sel && v) sel.value = v; // asignar el valor por código no dispara el evento "change"
         }
 
+        // ----- Búsqueda: tolera plurales ("cataratas"), acentos, palabras sueltas y errores de dedo -----
+        function variantesDe(palabra) {
+            const v = [palabra];
+            if (palabra.length > 3 && palabra.endsWith('s')) v.push(palabra.slice(0, -1));
+            if (palabra.length > 4 && palabra.endsWith('es')) v.push(palabra.slice(0, -2));
+            return v;
+        }
+        function buscarCirugias(q, tolerante) {
+            // las palabras muy cortas ("de", "la", "y") no ayudan a distinguir
+            let palabras = q.split(/\s+/).filter(p => p.length > 2);
+            if (!palabras.length) palabras = q.split(/\s+/).filter(Boolean);
+            // segunda pasada: solo el comienzo de cada palabra larga, para perdonar errores de escritura
+            if (tolerante) palabras = palabras.map(p => (p.length >= 6 ? p.slice(0, 5) : p));
+            const coincide = (texto, p) => variantesDe(p).some(x => texto.includes(x));
+            const resultados = [];
+            catalogData.forEach((it, orden) => {
+                const nombre = norm(it.name);
+                const resto = norm(`${it.spec} ${it.path} ${it.first} ${it.alias || ''}`);
+                const todoEnNombre = palabras.every(p => coincide(nombre, p));
+                const todoEnTexto = palabras.every(p => coincide(nombre + ' ' + resto, p));
+                if (todoEnTexto) resultados.push({ it, puntos: (todoEnNombre ? 0 : 1) * 1000 + orden });
+            });
+            // primero las que coinciden en el nombre; a igualdad, el orden del catálogo
+            return resultados.sort((x, y) => x.puntos - y.puntos).map(r => r.it);
+        }
+
         function searchProcedureOptions() {
             const q = norm(porId('calc-proc-search')?.value).trim();
             if (!porId('calc-procedure')) return;
             if (q.length < 2) { updateProcedureOptions(); return; }
-            const palabras = q.split(/\s+/);
-            const hallados = catalogData.filter(it => {
-                const t = norm(`${it.name} ${it.spec} ${it.path} ${it.first} ${it.alias || ''}`);
-                return palabras.every(p => t.includes(p));
-            });
+            let hallados = buscarCirugias(q, false);
+            if (!hallados.length) hallados = buscarCirugias(q, true);
             const procSelect = llenarProcedimientos(hallados, true);
             revelar(porId('calc-paso-proc'));
-            if (hallados.length === 1) procSelect.value = hallados[0].id;                  // un solo resultado: se elige solo
-            if (procSelect.value) { elegirProcedimiento(); }
-            else { ocultar(porId('calc-paso-datos')); estadoVacio(true); }
+            const aviso = porId('calc-coincidencias');
+            if (aviso) {
+                aviso.textContent = hallados.length > 1 ? `${hallados.length} coincidencias: verifique que sea el procedimiento correcto.` : '';
+                aviso.classList.toggle('hidden', hallados.length < 2);
+            }
+            if (hallados.length) {
+                procSelect.value = hallados[0].id;          // se completa solo con la mejor coincidencia (el resto queda en la lista)
+                elegirProcedimiento();                      // sincroniza la especialidad y muestra los datos y el esquema
+            } else {
+                ocultar(porId('calc-paso-datos')); estadoVacio(true);
+            }
         }
 
         function calculateBMI() {
