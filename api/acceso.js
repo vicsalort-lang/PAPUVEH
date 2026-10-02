@@ -64,6 +64,10 @@ async function manejar(req, res) {
     return res.status(500).json({ error: 'El acceso no está configurado. Avise a la UVEH.' });
   }
 
+  if (!(LISTA.personas || []).length) {
+    return res.status(500).json({ error: 'La lista de personal está vacía. Avise a la UVEH: falta cargar datos/acceso.json.' });
+  }
+
   const cedula = limpiarTexto(body.cedula, 30);
   const nombre = limpiarTexto(body.nombre, 120);
   const codigo = limpiarTexto(body.codigo, 30);
