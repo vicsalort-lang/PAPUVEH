@@ -42,6 +42,8 @@
 
         // ----- Despliegue gradual: buscador y especialidad -> procedimiento -> datos del paciente -----
         const porId = id => document.getElementById(id);
+        // Fármacos que contienen betalactámicos (penicilinas, cefalosporinas, carbapenémicos): son los que cambian si hay alergia
+        const BETALACTAMICOS = /cefalotina|cefazolina|cefuroxima|cefoxitina|cefotetan|cefotaxima|ceftriaxona|cefalexina|ampicilina|amoxicilina|penicilina|piperacilina|cloxacilina|sulbactam|clavulanato|ertapenem|meropenem|imipenem/i;
         function revelar(el) {
             if (!el) return;
             const estabaOculto = el.classList.contains('hidden');
@@ -300,14 +302,25 @@
                 addAlert('🧫 Factor SARM Identificado', 'Este procedimiento tiene un esquema fijo en la base. Consulte al Comité de Infecciones si el paciente está colonizado por SARM.', 'rose');
             }
 
-            // Con alergia a betalactámicos marcada se muestra únicamente el cuadro de alergia (no el esquema con penicilinas/cefalosporinas)
-            const alergia = (allergy === 'severe' || allergy === 'mild') && !noAplica;
+            // Alergia a betalactámicos: si el esquema primario contiene un betalactámico, se oculta y queda solo el cuadro de alergia.
+            // Si el esquema primario NO contiene betalactámicos (por ejemplo gentamicina subconjuntival o metronidazol), se conserva a la vista.
+            const primarioBL = BETALACTAMICOS.test(primaryDrugText);
+            const alergiaMarcada = (allergy === 'severe' || allergy === 'mild') && !noAplica;
+            const ocultarPrimario = alergiaMarcada && primarioBL;
+            const sinAlternativa = /sin alternativa/i.test(altText);
+            if (ocultarPrimario && sinAlternativa) {
+                altText = 'Sin alternativa descrita en las guías de la base. Consulte al Comité de Infecciones o comuníquese con la UVEH.';
+            }
             const cajaPrimaria = document.getElementById('result-primary-box');
             const cajaAlergia = document.getElementById('result-alt-box');
             const tituloAlergia = document.getElementById('result-alt-title');
-            if (cajaPrimaria) cajaPrimaria.classList.toggle('hidden', alergia);
-            if (cajaAlergia) cajaAlergia.classList.toggle('md:col-span-2', alergia);
-            if (tituloAlergia) tituloAlergia.textContent = alergia && allergy === 'mild' ? 'Alternativa por alergia leve (no IgE)' : 'Alternativa por alergia severa (IgE)';
+            if (cajaPrimaria) cajaPrimaria.classList.toggle('hidden', ocultarPrimario);
+            if (cajaAlergia) {
+                // Si no hay alternativa que mostrar y el esquema primario sigue visible, el cuadro de alergia sobra
+                cajaAlergia.classList.toggle('hidden', sinAlternativa && !ocultarPrimario);
+                cajaAlergia.classList.toggle('md:col-span-2', ocultarPrimario);
+            }
+            if (tituloAlergia) tituloAlergia.textContent = ocultarPrimario && allergy === 'mild' ? 'Alternativa por alergia leve (no IgE)' : 'Alternativa por alergia severa (IgE)';
             const notaAlt = document.getElementById('result-alt-note');
             if (notaAlt) notaAlt.classList.toggle('hidden', noAplica || fijo);
 
@@ -316,22 +329,24 @@
             document.getElementById('result-timing').textContent = timingText;
             document.getElementById('result-alt-drug').textContent = altText;
             document.getElementById('result-alt-timing').textContent = noAplica ? 'No aplica'
-                : (fijo ? 'Según el esquema indicado' : `Vancomicina: dentro de ${ventana.vancomicina} min previos; otros: ${ventana.beta_lactamico} min`);
+                : (fijo ? (procObj.ventana || 'Según el esquema indicado') : `Vancomicina: dentro de ${ventana.vancomicina} min previos; otros: ${ventana.beta_lactamico} min`);
 
             if (noAplica) {
                 // sin profilaxis no se emiten alertas de alergia
-            } else if (fijo) {
-                if (allergy === 'severe' || allergy === 'mild') {
-                    addAlert('Alergia a betalactámicos', 'Revise la alternativa indicada para este procedimiento.', 'amber');
+            } else if (allergy === 'severe' || allergy === 'mild') {
+                if (!primarioBL) {
+                    addAlert('Alergia a betalactámicos', 'El esquema indicado no contiene betalactámicos: no requiere sustitución por esta alergia.', 'emerald');
+                } else if (fijo) {
+                    addAlert('Alergia a betalactámicos', 'El esquema habitual contiene un betalactámico. Use la alternativa indicada en el cuadro de alergia.', 'amber');
+                } else if (allergy === 'severe') {
+                    addAlert('🔴 Alergia Severa a Betalactámicos (Tipo I IgE)', 'Evitar Penicilinas y Cefalosporinas. Use el régimen alternativo del cuadro de alergia.', 'rose');
+                } else {
+                    addAlert('🟢 Alergia Leve No Mediada por IgE', 'Cefalotina o Cefuroxima pueden utilizarse si la reacción no fue inmediata ni grave. La reactividad cruzada penicilina-cefalosporina es baja; la cifra histórica de ~10% sobrestima el riesgo (HCTM 2018). Si se prefiere evitarlos, use la alternativa del cuadro de alergia.', 'emerald');
                 }
-            } else if (allergy === 'severe') {
-                addAlert('🔴 Alergia Severa a Betalactámicos (Tipo I IgE)', 'Evitar Penicilinas y Cefalosporinas. Utilizar régimen alternativo: Clindamicina 900 mg IV o Vancomicina 15 mg/kg IV.', 'rose');
-            } else if (allergy === 'mild') {
-                addAlert('🟢 Alergia Leve No Mediada por IgE', 'Cefalotina o Cefuroxima pueden utilizarse si la reacción no fue inmediata ni grave. La reactividad cruzada penicilina-cefalosporina es baja; la cifra histórica de ~10% sobrestima el riesgo (HCTM 2018).', 'emerald');
             }
 
             const mapaRec = regla('recarga_h', {});
-            const textoRec = alergia ? altText : primaryDrugText;
+            const textoRec = ocultarPrimario ? altText : primaryDrugText;
             const primero = Object.keys(mapaRec)
                 .map(k => [k, textoRec.indexOf(k)]).filter(([k, p]) => p >= 0)
                 .sort((x, y) => x[1] - y[1])[0];
